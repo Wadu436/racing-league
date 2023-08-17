@@ -1,11 +1,18 @@
+# Write your query or mutation here
 query League($id: ID!) {
-    league(id: $id) {
-        id
-        name
-        status
-        events {
-            id
-            name
-        }
-    }
+	league(id: $id) {
+		id
+		name
+		status
+		events {
+			id
+			name
+			track {
+				country
+				name
+			}
+			championshipOrder
+            date
+		}
+	}
 }

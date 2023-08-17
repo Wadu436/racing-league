@@ -1,15 +1,25 @@
+"""
+Implement the DateTime<Utc> scalar
+
+The input/output is a string in RFC3339 format.
+"""
+scalar DateTime
+
 type Entry {
   team: Team!
   user: User!
 }
 
 type Event {
+  championshipOrder: Int!
+  date: DateTime!
   entries: [Entry!]!
   id: ID!
   name: String!
   pointsRule: PointsRule!
   sessions: [Session!]!
   track: Track!
+  trackId: ID!
 }
 
 type Lap {
@@ -83,6 +93,7 @@ type Team {
 }
 
 type Track {
+  country: String!
   id: ID!
   name: String!
 }
@@ -98,4 +109,5 @@ enum Tyre {
 type User {
   id: ID!
   name: String!
+  nationality: String!
 }

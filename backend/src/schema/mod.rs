@@ -15,6 +15,8 @@ pub type Schema = async_graphql::Schema<Query, EmptyMutation, EmptySubscription>
 
 pub struct Query;
 
+// TODO: create country new-type
+
 #[serde_as]
 #[derive(
     serde::Serialize, Deserialize, Add, PartialEq, Eq, PartialOrd, Ord, From, Into, Constructor,
@@ -68,6 +70,9 @@ impl League {
 pub struct Event {
     id: ID,
     name: String,
+    championship_order: u32,
+    date: chrono::DateTime<chrono::Utc>,
+    track_id: ID,
 }
 
 const EMPTY_ENTRIES: &[Entry] = &[];
@@ -92,11 +97,10 @@ impl Event {
             .unwrap_or(EMPTY_SESSIONS)
     }
 
-    async fn track(&self, _ctx: &Context<'_>) -> Track {
-        Track {
-            id: ID::from(Uuid::default()),
-            name: "Hockenheimring".to_owned(),
-        }
+    async fn track<'a>(&self, ctx: &Context<'a>) -> &'a Track {
+        let data = ctx.data_unchecked::<data::Data>();
+
+        data.tracks.get(&self.track_id).unwrap()
     }
 
     async fn points_rule(&self, _ctx: &Context<'_>) -> PointsRule {
@@ -175,6 +179,7 @@ impl Lap {
         User {
             id: ID::from(Uuid::default()),
             name: self.username.clone(),
+            nationality: "BE".to_owned(),
         }
     }
 }
@@ -197,6 +202,7 @@ impl Overtake {
         User {
             id: ID::from(Uuid::default()),
             name: self.overtaking_driver_name.clone(),
+            nationality: "BE".to_owned(),
         }
     }
 
@@ -204,6 +210,7 @@ impl Overtake {
         User {
             id: ID::from(Uuid::default()),
             name: self.overtaken_driver_name.clone(),
+            nationality: "BE".to_owned(),
         }
     }
 }
@@ -316,6 +323,7 @@ pub struct Team {
 pub struct Track {
     id: ID,
     name: String,
+    country: String, // Alpha 2 Code
 }
 
 // TODO Login Details, Account stuff
@@ -323,6 +331,7 @@ pub struct Track {
 pub struct User {
     id: ID,
     name: String,
+    nationality: String, // Alpha 2 Code
 }
 
 #[Object]

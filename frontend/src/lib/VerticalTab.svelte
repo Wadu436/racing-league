@@ -1,8 +1,8 @@
 <div class="flex">
-	<div>
+	<div class="p-4">
 		<slot name="left" />
 	</div>
-	<div>
+	<div class="p-4">
 		<slot name="right" />
 	</div>
 </div>

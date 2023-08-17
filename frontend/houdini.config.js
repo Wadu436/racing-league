@@ -1,4 +1,5 @@
 /// <references types="houdini-svelte">
+import { DateTime } from 'luxon';
 
 /** @type {import('houdini').ConfigFile} */
 const config = {
@@ -11,9 +12,14 @@ const config = {
 
 	scalars: {
 		/* in your case, something like */
-		UUID: {
-			// <- The GraphQL Scalar
-			type: 'string' // <-  The TypeScript type
+		DateTime: {
+			type: "luxon.DateTime",
+			unmarshal(val) {
+				return val ? DateTime.fromISO(val) : null;
+			},
+			marshal(date) {
+				return date && date.toIso();
+			}
 		}
 	}
 };

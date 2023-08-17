@@ -359,6 +359,11 @@
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.12.tgz"
   integrity sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==
 
+"@types/luxon@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.3.1.tgz#08727da7d81ee6a6c702b9dc6c8f86be010eb4dc"
+  integrity sha512-XOS5nBcgEeP2PpcqJHjCWhUCAzGfXIU8ILOSLpx2FhxqMW9KdxgCGXNOEKGVBfveKtIpztHzKK5vSRVLyW/NqA==
+
 "@types/micromatch@^4.0.2":
   version "4.0.2"
   resolved "https://registry.npmjs.org/@types/micromatch/-/micromatch-4.0.2.tgz"
@@ -736,6 +741,11 @@ cookie@^0.5.0:
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.5.0.tgz"
   integrity sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==
 
+country-flag-icons@^1.5.7:
+  version "1.5.7"
+  resolved "https://registry.yarnpkg.com/country-flag-icons/-/country-flag-icons-1.5.7.tgz#f1f2ddf14f3cbf01cba6746374aeba94db35d4b4"
+  integrity sha512-AdvXhMcmSp7nBSkpGfW4qR/luAdRUutJqya9PuwRbsBzuoknThfultbv7Ib6fWsHXC43Es/4QJ8gzQQdBNm75A==
+
 cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://registry.npmjs.org/cross-spawn/-/cross-spawn-7.0.3.tgz"
@@ -1098,6 +1108,11 @@ find-up@^5.0.0:
   dependencies:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
+
+flagpack@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/flagpack/-/flagpack-1.0.5.tgz#c122c5eda7aec2293bbefbfe13f35f4fff51cfd1"
+  integrity sha512-jrb3OEoVXPBXjmhwZq6C9DTH6Axarh+rfnT3kA5T4xQ2FD9MogwCasqNJnMvhHHkaEVryXwQf1MQvqVv8UsK3g==
 
 flat-cache@^3.0.4:
   version "3.0.4"
@@ -1562,6 +1577,11 @@ lru-cache@^6.0.0:
   integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
   dependencies:
     yallist "^4.0.0"
+
+luxon@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-3.4.0.tgz#17cb754efecbf76994f05b2a3f1f91fad7ddfde7"
+  integrity sha512-7eDo4Pt7aGhoCheGFIuq4Xa2fJm4ZpmldpGhjTYBNUYNCN6TIEP6v7chwwwt3KRp7YR+rghbfvjyo3V5y9hgBw==
 
 magic-string@^0.27.0:
   version "0.27.0"
@@ -2211,6 +2231,16 @@ svelte-eslint-parser@^0.32.2:
     espree "^9.0.0"
     postcss "^8.4.25"
     postcss-scss "^4.0.6"
+
+svelte-flagpack@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/svelte-flagpack/-/svelte-flagpack-1.0.0.tgz#330afa150997b85776016335dc244587e535f318"
+  integrity sha512-125+Da/CSptnVfc5a5RxgpFi+Q1t5+Y34tjMm2nUGDUHzOz05gyzCLAFxqmA5vukoVcbkqWMjF8h7I97wSZOpg==
+
+svelte-flags@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/svelte-flags/-/svelte-flags-0.5.1.tgz#d7f71843cad45dce0a1b07b12d886ec2ad9fd7b6"
+  integrity sha512-4phHllfiBILJQr/pdiyMIMtXuUqPe/8xaxxPqDtV+JF96PVw7SY58IgHxy333np9MVXdPwdPeytzhCtPtLVHYQ==
 
 svelte-hmr@^0.15.3:
   version "0.15.3"

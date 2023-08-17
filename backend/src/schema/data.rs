@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use async_graphql::ID;
+use chrono::{TimeZone, Utc};
 
 pub(crate) struct Data {
     pub users: HashMap<ID, super::User>,
@@ -11,6 +12,7 @@ pub(crate) struct Data {
     pub entries: HashMap<ID, Vec<super::Entry>>,
     // Event -> Sessions
     pub sessions: HashMap<ID, Vec<super::Session>>,
+    pub tracks: HashMap<ID, super::Track>,
 }
 
 impl Data {
@@ -19,18 +21,22 @@ impl Data {
             super::User {
                 id: ID::from("nam"),
                 name: "Nam".to_owned(),
+                nationality: "NL".to_owned(),
             },
             super::User {
                 id: ID::from("warre"),
                 name: "Warre".to_owned(),
+                nationality: "BE".to_owned(),
             },
             super::User {
                 id: ID::from("aleks"),
                 name: "Aleks".to_owned(),
+                nationality: "BG".to_owned(),
             },
             super::User {
                 id: ID::from("charles"),
                 name: "Charles".to_owned(),
+                nationality: "NL".to_owned(),
             },
         ]
         .into_iter()
@@ -77,14 +83,32 @@ impl Data {
                 super::Event {
                     id: ID::from("event-1"),
                     name: "Eifel Grand Prix".to_owned(),
+                    championship_order: 1,
+                    date: Utc
+                        .with_ymd_and_hms(2023, 8, 12, 18, 00, 00)
+                        .single()
+                        .unwrap(),
+                    track_id: ID::from("hockenheim"),
                 },
                 super::Event {
                     id: ID::from("event-2"),
                     name: "Belgian Grand Prix".to_owned(),
+                    championship_order: 2,
+                    date: Utc
+                        .with_ymd_and_hms(2023, 8, 19, 18, 00, 00)
+                        .single()
+                        .unwrap(),
+                    track_id: ID::from("spa"),
                 },
                 super::Event {
                     id: ID::from("event-3"),
                     name: "Monaco Grand Prix".to_owned(),
+                    championship_order: 3,
+                    date: Utc
+                        .with_ymd_and_hms(2023, 8, 26, 18, 00, 00)
+                        .single()
+                        .unwrap(),
+                    track_id: ID::from("monaco"),
                 },
             ],
         )]
@@ -299,12 +323,32 @@ impl Data {
         .into_iter()
         .collect();
 
+        let tracks = [super::Track {
+            id: ID::from("hockenheim"),
+            name: "Hockenheimring".to_owned(),
+            country: "DE".to_owned(),
+        },
+        super::Track {
+            id: ID::from("spa"),
+            name: "Spa-Francorchamps".to_owned(),
+            country: "BE".to_owned(),
+        },
+        super::Track {
+            id: ID::from("monaco"),
+            name: "Monaco".to_owned(),
+            country: "MC".to_owned(),
+        }]
+        .into_iter()
+        .map(|item| (item.id.clone(), item))
+        .collect();
+
         Self {
             users,
             leagues,
             events,
             entries,
             sessions,
+            tracks,
         }
     }
 }
