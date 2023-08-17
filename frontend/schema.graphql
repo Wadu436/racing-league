@@ -1,0 +1,101 @@
+type Entry {
+  team: Team!
+  user: User!
+}
+
+type Event {
+  entries: [Entry!]!
+  id: ID!
+  name: String!
+  pointsRule: PointsRule!
+  sessions: [Session!]!
+  track: Track!
+}
+
+type Lap {
+  driver: User!
+  id: ID!
+  lapNumber: Int!
+  lapType: LapType!
+  laptimeInMs: Laptime!
+  tyres: Tyre!
+  valid: Boolean!
+}
+
+enum LapType {
+  HOT
+  IN
+  OUT
+}
+
+scalar Laptime
+
+type League {
+  events: [Event!]!
+  id: ID!
+  name: String!
+  status: Status!
+}
+
+type Overtake {
+  id: ID!
+  lap: Int!
+  overtakenDriver: User!
+  overtakingDriver: User!
+}
+
+type PointsRule {
+  pointsForFastestLap: Int!
+  pointsForPole: Int!
+  pointsPerPosition: [Int!]!
+}
+
+type Query {
+  league(id: ID!): League!
+  leagues: [League!]!
+  user(id: ID!): User!
+}
+
+type Session {
+  classification: [User!]!
+  id: ID!
+  laps: [Lap!]!
+  overtakes: [Overtake!]
+  sessionType: SessionType!
+}
+
+enum SessionType {
+  PRACTICE
+  QUALIFYING
+  RACE
+  SPRINT
+  SPRINT_QUALIFYING
+}
+
+enum Status {
+  ACTIVE
+  FINISHED
+}
+
+type Team {
+  id: ID!
+  name: String!
+}
+
+type Track {
+  id: ID!
+  name: String!
+}
+
+enum Tyre {
+  HARD
+  INTER
+  MEDIUM
+  SOFT
+  WET
+}
+
+type User {
+  id: ID!
+  name: String!
+}

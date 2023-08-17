@@ -1,0 +1,7 @@
+query Info {
+    leagues {
+        id
+        name
+        status
+    }
+}

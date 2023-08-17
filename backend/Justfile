@@ -1,0 +1,4 @@
+watch:
+    #!/bin/sh
+    cargo watch -x build -s 'touch .trigger' &
+    cargo watch --no-vcs-ignores -w .trigger -x run
