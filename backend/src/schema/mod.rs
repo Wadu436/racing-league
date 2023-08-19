@@ -128,7 +128,7 @@ impl Event {
     }
 }
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Deserialize)]
 pub struct PointsRule {
     points_per_position: Vec<u32>,
     points_for_pole: u32,
@@ -216,14 +216,14 @@ impl ClassificationEntry {
     }
 }
 
-#[derive(Enum, Copy, Clone, PartialEq, Eq)]
+#[derive(Enum, Copy, Clone, PartialEq, Eq, Deserialize)]
 pub enum LapType {
     In,
     Out,
     Hot,
 }
 
-#[derive(Enum, Copy, Clone, PartialEq, Eq)]
+#[derive(Enum, Copy, Clone, PartialEq, Eq, Deserialize)]
 pub enum Tyre {
     Soft,
     Medium,
@@ -233,7 +233,7 @@ pub enum Tyre {
 }
 
 // TODO: move data to data.rs
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
 pub struct Lap {
     id: ID,
@@ -258,7 +258,7 @@ impl Lap {
     }
 }
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
 pub struct Overtake {
     id: ID,
