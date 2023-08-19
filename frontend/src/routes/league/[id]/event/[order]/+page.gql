@@ -1,0 +1,19 @@
+query Event($id: ID!, $order: Int!) {
+	league(id: $id) {
+		event(championshipOrder: $order) {
+			name
+			sessions {
+				classification {
+					user {
+						name
+						nationality
+					}
+					team {
+						name
+					}
+				}
+				sessionType
+			}
+		}
+	}
+}

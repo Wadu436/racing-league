@@ -1,0 +1,5 @@
+[
+  { "id": "hockenheim", "name": "Hockenheimring", "country": "DE" },
+  { "id": "spa", "name": "Spa-Francorchamps", "country": "BE" },
+  { "id": "monaco", "name": "Monaco", "country": "MC" }
+]

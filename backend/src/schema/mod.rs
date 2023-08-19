@@ -38,13 +38,13 @@ impl From<i64> for Laptime {
 scalar!(Laptime);
 
 // TODO: add an alternative here too for leagues that havent started yet
-#[derive(Enum, Copy, Clone, PartialEq, Eq)]
+#[derive(Enum, Copy, Clone, PartialEq, Eq, Deserialize)]
 pub enum Status {
     Active,
     Finished,
 }
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
 pub struct League {
     id: ID,
@@ -52,20 +52,34 @@ pub struct League {
     status: Status,
 }
 
-const EMPTY_EVENTS: &[Event] = &[];
 #[ComplexObject]
 impl League {
-    async fn events<'a>(&self, ctx: &Context<'a>) -> &'a [Event] {
+    async fn events<'a>(&self, ctx: &Context<'a>) -> Vec<&'a Event> {
         let data = ctx.data_unchecked::<data::Data>();
 
         data.events
-            .get(&self.id)
-            .map(|event| event.as_slice())
-            .unwrap_or(EMPTY_EVENTS)
+            .iter()
+            .filter(|event| event.league_id == self.id)
+            .collect()
+    }
+
+    async fn event<'a>(
+        &self,
+        ctx: &Context<'a>,
+        championship_order: u32,
+    ) -> Result<&'a Event, Error> {
+        let data = ctx.data_unchecked::<data::Data>();
+
+        data.events
+            .iter()
+            .find(|event| {
+                event.league_id == self.id && event.championship_order == championship_order
+            })
+            .ok_or(Error::new("Event not found"))
     }
 }
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
 pub struct Event {
     id: ID,
@@ -73,34 +87,36 @@ pub struct Event {
     championship_order: u32,
     date: chrono::DateTime<chrono::Utc>,
     track_id: ID,
+    league_id: ID,
 }
 
-const EMPTY_ENTRIES: &[Entry] = &[];
-const EMPTY_SESSIONS: &[Session] = &[];
 #[ComplexObject]
 impl Event {
-    async fn entries<'a>(&self, ctx: &Context<'a>) -> &'a [Entry] {
+    async fn entries<'a>(&self, ctx: &Context<'a>) -> Vec<&'a Entry> {
         let data = ctx.data_unchecked::<data::Data>();
 
         data.entries
-            .get(&self.id)
-            .map(|entry| entry.as_slice())
-            .unwrap_or(EMPTY_ENTRIES)
+            .iter()
+            .filter(|entry| entry.event_id == self.id)
+            .collect()
     }
 
-    async fn sessions<'a>(&self, ctx: &Context<'a>) -> &'a [Session] {
+    async fn sessions<'a>(&self, ctx: &Context<'a>) -> Vec<&'a Session> {
         let data = ctx.data_unchecked::<data::Data>();
 
         data.sessions
-            .get(&self.id)
-            .map(|entry| entry.as_slice())
-            .unwrap_or(EMPTY_SESSIONS)
+            .iter()
+            .filter(|item| self.id == item.event_id)
+            .collect()
     }
 
     async fn track<'a>(&self, ctx: &Context<'a>) -> &'a Track {
         let data = ctx.data_unchecked::<data::Data>();
 
-        data.tracks.get(&self.track_id).unwrap()
+        data.tracks
+            .iter()
+            .find(|track| track.id == self.track_id)
+            .unwrap()
     }
 
     async fn points_rule(&self, _ctx: &Context<'_>) -> PointsRule {
@@ -119,13 +135,36 @@ pub struct PointsRule {
     points_for_fastest_lap: u32,
 }
 
-#[derive(SimpleObject)]
+#[derive(Deserialize)]
 pub struct Entry {
-    user: User,
-    team: Team,
+    #[serde(rename = "event")]
+    event_id: ID,
+    #[serde(rename = "user")]
+    user_id: ID,
+    #[serde(rename = "team")]
+    team_id: ID,
 }
 
-#[derive(Enum, Clone, Copy, Debug, PartialEq, Eq)]
+#[Object]
+impl Entry {
+    async fn user<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .users
+            .iter()
+            .find(|user| user.id == self.user_id)
+            .ok_or(Error::new("User not found"))
+    }
+
+    async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .teams
+            .iter()
+            .find(|team| team.id == self.team_id)
+            .ok_or(Error::new("Team not found"))
+    }
+}
+
+#[derive(Enum, Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
 pub enum SessionType {
     Race,
     Sprint,
@@ -134,12 +173,47 @@ pub enum SessionType {
     Practice,
 }
 
-#[derive(SimpleObject)]
+#[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
 pub struct Session {
     id: ID,
+    event_id: ID,
     session_type: SessionType,
-    classification: Vec<User>,
+    classification: Vec<ClassificationEntry>,
+}
+
+#[derive(Deserialize)]
+pub struct ClassificationEntry {
+    user_id: ID,
+    team_id: ID,
+}
+
+#[Object]
+impl ClassificationEntry {
+    async fn user<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .users
+            .iter()
+            .find(|user| user.id == self.user_id)
+            .ok_or(Error::new("User not found"))
+    }
+
+    async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .teams
+            .iter()
+            .find(|team| team.id == self.team_id)
+            .ok_or(Error::new("Team not found"))
+    }
+
+    // TODO do this good
+    async fn points(&self, _ctx: &Context<'_>) -> u32 {
+        0
+    }
+
+    async fn fastest_lap(&self, _ctx: &Context<'_>) -> Option<Laptime> {
+        None
+    }
 }
 
 #[derive(Enum, Copy, Clone, PartialEq, Eq)]
@@ -313,13 +387,13 @@ impl Session {
     }
 }
 
-#[derive(SimpleObject, Clone)]
+#[derive(SimpleObject, Clone, Deserialize)]
 pub struct Team {
     id: ID,
     name: String,
 }
 
-#[derive(SimpleObject, Clone)]
+#[derive(SimpleObject, Clone, Deserialize)]
 pub struct Track {
     id: ID,
     name: String,
@@ -327,7 +401,7 @@ pub struct Track {
 }
 
 // TODO Login Details, Account stuff
-#[derive(SimpleObject, Clone)]
+#[derive(SimpleObject, Clone, Deserialize)]
 pub struct User {
     id: ID,
     name: String,
@@ -339,22 +413,20 @@ impl Query {
     async fn user<'a>(&self, ctx: &Context<'a>, id: ID) -> Result<&'a User, Error> {
         ctx.data_unchecked::<data::Data>()
             .users
-            .get(&id)
+            .iter()
+            .find(|user| user.id == id)
             .ok_or(Error::new("User not found"))
     }
 
-    async fn leagues<'a>(&self, ctx: &Context<'a>) -> Vec<&'a League> {
-        ctx.data_unchecked::<data::Data>()
-            .leagues
-            .iter()
-            .map(|(_, league)| league)
-            .collect()
+    async fn leagues<'a>(&self, ctx: &Context<'a>) -> &'a Vec<League> {
+        &ctx.data_unchecked::<data::Data>().leagues
     }
 
     async fn league<'a>(&self, ctx: &Context<'a>, id: ID) -> Result<&'a League, Error> {
         ctx.data_unchecked::<data::Data>()
             .leagues
-            .get(&id)
+            .iter()
+            .find(|league| league.id == id)
             .ok_or(Error::new("League not found"))
     }
 }

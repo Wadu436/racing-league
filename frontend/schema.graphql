@@ -1,3 +1,10 @@
+type ClassificationEntry {
+  fastestLap: Laptime
+  points: Int!
+  team: Team!
+  user: User!
+}
+
 """
 Implement the DateTime<Utc> scalar
 
@@ -15,6 +22,7 @@ type Event {
   date: DateTime!
   entries: [Entry!]!
   id: ID!
+  leagueId: ID!
   name: String!
   pointsRule: PointsRule!
   sessions: [Session!]!
@@ -41,6 +49,7 @@ enum LapType {
 scalar Laptime
 
 type League {
+  event(championshipOrder: Int!): Event!
   events: [Event!]!
   id: ID!
   name: String!
@@ -67,7 +76,8 @@ type Query {
 }
 
 type Session {
-  classification: [User!]!
+  classification: [ClassificationEntry!]!
+  eventId: ID!
   id: ID!
   laps: [Lap!]!
   overtakes: [Overtake!]

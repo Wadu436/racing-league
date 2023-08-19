@@ -1,0 +1,139 @@
+[
+  {
+    "id": "session-0",
+    "event_id": "event-1",
+    "session_type": "Qualifying",
+    "classification": [
+      {
+        "user_id": "sharl",
+        "team_id": "Ferrari"
+      },
+      {
+        "user_id": "warre",
+        "team_id": "Ferrari"
+      },
+      {
+        "user_id": "nam",
+        "team_id": "RBR"
+      },
+      {
+        "user_id": "charles",
+        "team_id": "RBR"
+      },
+      {
+        "user_id": "aleks",
+        "team_id": "Mercedes"
+      }
+    ]
+  },
+  {
+    "id": "session-1",
+    "event_id": "event-1",
+    "session_type": "Sprint",
+    "classification": [
+      {
+        "user_id": "nam",
+        "team_id": "RBR"
+      },
+      {
+        "user_id": "sharl",
+        "team_id": "Ferrari"
+      },
+      {
+        "user_id": "aleks",
+        "team_id": "Mercedes"
+      },
+      {
+        "user_id": "warre",
+        "team_id": "Ferrari"
+      },
+      {
+        "user_id": "charles",
+        "team_id": "RBR"
+      }
+    ]
+  },
+  {
+    "id": "session-2",
+    "event_id": "event-1",
+    "session_type": "Race",
+    "classification": [
+      {
+        "user_id": "charles",
+        "team_id": "RBR"
+      },
+      {
+        "user_id": "aleks",
+        "team_id": "Mercedes"
+      },
+      {
+        "user_id": "nam",
+        "team_id": "RBR"
+      },
+      {
+        "user_id": "sharl",
+        "team_id": "Ferrari"
+      },
+
+      {
+        "user_id": "warre",
+        "team_id": "Ferrari"
+      }
+    ]
+  },
+  {
+    "id": "session-3",
+    "event_id": "event-2",
+    "session_type": "Qualifying",
+    "classification": [
+      {
+        "user_id": "warre",
+        "team_id": "Ferrari"
+      },
+      {
+        "user_id": "sharl",
+        "team_id": "Ferrari"
+      },
+      {
+        "user_id": "nam",
+        "team_id": "RBR"
+      },
+      {
+        "user_id": "aleks",
+        "team_id": "Mercedes"
+      },
+      {
+        "user_id": "charles",
+        "team_id": "RBR"
+      }
+    ]
+  },
+  {
+    "id": "session-4",
+    "event_id": "event-2",
+    "session_type": "Race",
+    "classification": [
+      {
+        "user_id": "aleks",
+        "team_id": "Mercedes"
+      },
+      {
+        "user_id": "charles",
+        "team_id": "RBR"
+      },
+      {
+        "user_id": "sharl",
+        "team_id": "Ferrari"
+      },
+      {
+        "user_id": "nam",
+        "team_id": "RBR"
+      },
+
+      {
+        "user_id": "warre",
+        "team_id": "Ferrari"
+      }
+    ]
+  }
+]
