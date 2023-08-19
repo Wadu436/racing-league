@@ -1,27 +1,16 @@
 use super::{Entry, Event, League, Session, Team, Track, User};
 
 macro_rules! read_data {
-    ($file:expr) => {
-        serde_json::from_str(
-            &std::fs::read_to_string(format!(
-                "{}/src/schema/data/{}",
-                env!("CARGO_MANIFEST_DIR"),
-                $file
-            ))
-            .unwrap(),
-        )
-        .unwrap()
-    };
     ($file:expr, $type:ty) => {
         serde_json::from_str::<Vec<$type>>(
-            &std::fs::read_to_string(format!(
-                "{}/src/schema/data/{}",
+            &std::fs::read_to_string(concat!(
                 env!("CARGO_MANIFEST_DIR"),
+                "/src/schema/data/",
                 $file
             ))
-            .unwrap(),
+            .expect(concat!("Failed to read data file '", $file, "'")),
         )
-        .unwrap()
+        .expect(concat!("Failed to parse data file '", $file, "'"))
     };
 }
 
@@ -29,11 +18,8 @@ pub(crate) struct Data {
     pub users: Vec<User>,
     pub teams: Vec<Team>,
     pub leagues: Vec<super::League>,
-    // League -> Events
     pub events: Vec<super::Event>,
-    // Event -> Entries
     pub entries: Vec<super::Entry>,
-    // Event -> Sessions
     pub sessions: Vec<super::Session>,
     pub tracks: Vec<super::Track>,
 }
