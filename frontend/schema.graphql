@@ -1,8 +1,6 @@
-type ClassificationEntry {
-  fastestLap: Laptime
-  points: Int!
-  team: Team!
-  user: User!
+type Classification {
+  finishStatus: FinishStatus!
+  position: Int!
 }
 
 """
@@ -12,27 +10,25 @@ The input/output is a string in RFC3339 format.
 """
 scalar DateTime
 
-type Entry {
-  team: Team!
-  user: User!
-}
-
 type Event {
   championshipOrder: Int!
   date: DateTime!
-  entries: [Entry!]!
   id: ID!
-  leagueId: ID!
+  league: League!
   name: String!
   pointsRule: PointsRule!
   sessions: [Session!]!
   track: Track!
-  trackId: ID!
+}
+
+enum FinishStatus {
+  DNF
+  DNS
+  DSQ
+  FINISHED
 }
 
 type Lap {
-  driver: User!
-  id: ID!
   lapNumber: Int!
   lapType: LapType!
   laptimeInMs: Laptime!
@@ -72,16 +68,27 @@ type PointsRule {
 type Query {
   league(id: ID!): League!
   leagues: [League!]!
+  session(sessionId: ID!): Session!
   user(id: ID!): User!
 }
 
 type Session {
-  classification: [ClassificationEntry!]!
-  eventId: ID!
+  event: Event!
+  fastestLap: User!
   id: ID!
-  laps: [Lap!]!
-  overtakes: [Overtake!]
+  participants: [SessionParticipant!]!
   sessionType: SessionType!
+}
+
+type SessionParticipant {
+  classification: Classification!
+  fastestLap: Lap
+  laps: [Lap!]!
+  overtakes: [Overtake!]!
+  points: Int!
+  session: Session!
+  team: Team!
+  user: User!
 }
 
 enum SessionType {

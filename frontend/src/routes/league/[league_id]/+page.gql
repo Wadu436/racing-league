@@ -1,6 +1,6 @@
 # Write your query or mutation here
-query League($id: ID!) {
-	league(id: $id) {
+query League($league_id: ID!) {
+	league(id: $league_id) {
 		id
 		name
 		status

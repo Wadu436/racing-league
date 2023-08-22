@@ -3,137 +3,815 @@
     "id": "session-0",
     "event_id": "event-1",
     "session_type": "Qualifying",
-    "classification": [
+    "participants": [
       {
-        "user_id": "sharl",
-        "team_id": "Ferrari"
+        "user": "sharl",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 1
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "warre",
-        "team_id": "Ferrari"
+        "user": "warre",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 2
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "nam",
-        "team_id": "RBR"
+        "user": "charles",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DNF",
+          "position": 3
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "charles",
-        "team_id": "RBR"
+        "user": "aleks",
+        "team": "Mercedes",
+        "classification": {
+          "finish_status": "DNS",
+          "position": 4
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "aleks",
-        "team_id": "Mercedes"
+        "user": "nam",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DSQ",
+          "position": 5
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       }
-    ]
+    ],
+    "fastest_lap": "sharl"
   },
   {
     "id": "session-1",
     "event_id": "event-1",
     "session_type": "Sprint",
-    "classification": [
+    "participants": [
       {
-        "user_id": "nam",
-        "team_id": "RBR"
+        "user": "warre",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 2
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "sharl",
-        "team_id": "Ferrari"
+        "user": "sharl",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 1
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "aleks",
-        "team_id": "Mercedes"
+        "user": "nam",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DSQ",
+          "position": 5
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "warre",
-        "team_id": "Ferrari"
+        "user": "charles",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DNF",
+          "position": 3
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "charles",
-        "team_id": "RBR"
+        "user": "aleks",
+        "team": "Mercedes",
+        "classification": {
+          "finish_status": "DNS",
+          "position": 4
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       }
-    ]
+    ],
+    "fastest_lap": "aleks"
   },
   {
     "id": "session-2",
     "event_id": "event-1",
     "session_type": "Race",
-    "classification": [
+    "participants": [
       {
-        "user_id": "charles",
-        "team_id": "RBR"
+        "user": "sharl",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 1
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Soft"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Hard"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "aleks",
-        "team_id": "Mercedes"
+        "user": "aleks",
+        "team": "Mercedes",
+        "classification": {
+          "finish_status": "DNS",
+          "position": 4
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Hard"
+          }
+        ]
       },
       {
-        "user_id": "nam",
-        "team_id": "RBR"
+        "user": "charles",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DNF",
+          "position": 3
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "sharl",
-        "team_id": "Ferrari"
+        "user": "warre",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 2
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
-
       {
-        "user_id": "warre",
-        "team_id": "Ferrari"
+        "user": "nam",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DSQ",
+          "position": 5
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       }
-    ]
+    ],
+    "fastest_lap": "nam"
   },
   {
     "id": "session-3",
     "event_id": "event-2",
     "session_type": "Qualifying",
-    "classification": [
+    "participants": [
       {
-        "user_id": "warre",
-        "team_id": "Ferrari"
+        "user": "sharl",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 1
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "sharl",
-        "team_id": "Ferrari"
+        "user": "warre",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 2
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "nam",
-        "team_id": "RBR"
+        "user": "charles",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DNF",
+          "position": 3
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "aleks",
-        "team_id": "Mercedes"
+        "user": "aleks",
+        "team": "Mercedes",
+        "classification": {
+          "finish_status": "DNS",
+          "position": 4
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "charles",
-        "team_id": "RBR"
+        "user": "nam",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DSQ",
+          "position": 5
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       }
-    ]
+    ],
+    "fastest_lap": "warre"
   },
   {
     "id": "session-4",
     "event_id": "event-2",
     "session_type": "Race",
-    "classification": [
+    "participants": [
       {
-        "user_id": "aleks",
-        "team_id": "Mercedes"
+        "user": "sharl",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 1
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "charles",
-        "team_id": "RBR"
+        "user": "aleks",
+        "team": "Mercedes",
+        "classification": {
+          "finish_status": "DNS",
+          "position": 4
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "sharl",
-        "team_id": "Ferrari"
+        "user": "charles",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DNF",
+          "position": 3
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
       {
-        "user_id": "nam",
-        "team_id": "RBR"
+        "user": "warre",
+        "team": "Ferrari",
+        "classification": {
+          "finish_status": "Finished",
+          "position": 2
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       },
-
       {
-        "user_id": "warre",
-        "team_id": "Ferrari"
+        "user": "nam",
+        "team": "RBR",
+        "classification": {
+          "finish_status": "DSQ",
+          "position": 5
+        },
+        "laps": [
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90051,
+            "valid": true,
+            "lap_type": "Out",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 91243,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          },
+          {
+            "lap_number": 1,
+            "laptime_in_ms": 90544,
+            "valid": true,
+            "lap_type": "Hot",
+            "tyres": "Medium"
+          }
+        ]
       }
-    ]
+    ],
+    "fastest_lap": "charles"
   }
 ]

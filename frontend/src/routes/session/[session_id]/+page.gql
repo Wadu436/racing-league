@@ -1,0 +1,38 @@
+query Session($session_id: ID!) {
+	session(sessionId: $session_id) {
+		id
+		sessionType
+		fastestLap {
+			id
+		}
+		event {
+			name
+			sessions {
+				id
+				sessionType
+			}
+		}
+		participants {
+			user {
+				id
+				name
+				nationality
+			}
+			team {
+				name
+			}
+			classification {
+				position
+				finishStatus
+			}
+			fastestLap {
+				laptimeInMs
+			}
+			points
+			laps {
+				lapNumber
+				tyres
+			}
+		}
+	}
+}

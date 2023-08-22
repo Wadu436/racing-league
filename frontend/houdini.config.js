@@ -1,5 +1,5 @@
 /// <references types="houdini-svelte">
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 
 /** @type {import('houdini').ConfigFile} */
 const config = {
@@ -19,6 +19,15 @@ const config = {
 			},
 			marshal(date) {
 				return date && date.toIso();
+			}
+		},
+		Laptime: {
+			type: "luxon.Duration",
+			unmarshal(val) {
+				return val ? Duration.fromMillis(val) : null;
+			},
+			marshal(dur) {
+				return dur && Math.floor(dur.as("milliseconds"));
 			}
 		}
 	}

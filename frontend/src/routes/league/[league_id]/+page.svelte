@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Flag from '$lib/Flag.svelte';
 	import VerticalTab from '$lib/VerticalTab.svelte';
 	import { countryCodeAlpha2Dict, flagUrlFromAlpha2 } from '$lib/countryCodes';
 	import type { PageData } from './$houdini';
@@ -18,17 +19,18 @@
 		<div slot="left">
 			Events
 			{#each $League.data?.league.events || [] as event}
-				<a href="/league/{$League.data?.league.id}/event/{event.championshipOrder}" class="bg-gray-200 p-4 rounded-lg mb-2 flex justify-start">
+				<a
+					href="/league/{$League.data?.league.id}/event/{event.championshipOrder}"
+					class="bg-gray-200 p-4 rounded-lg mb-2 flex justify-start"
+				>
 					<div class="flex flex-col justify-center w-[4.1rem]">
 						<div class="text-lg font-semibold flex items-center justify-between">
 							<div>
 								{event.championshipOrder.toString().padStart(2, '0')}
 							</div>
-							<img
-								class="pl-2"
-								src={flagUrlFromAlpha2(event.track.country, 'l')}
-								alt="Flag of {countryCodeAlpha2Dict[event.track.country]?.countryName}"
-							/>
+							<div class="pl-2">
+								<Flag alpha2={event.track.country} />
+							</div>
 						</div>
 						<div class="text-sm text-start">
 							{event.date.toFormat('dd LLL')}
