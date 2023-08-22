@@ -309,9 +309,9 @@ impl Session {
 #[derive(Enum, Deserialize, Clone, Copy, PartialEq, Eq)]
 pub enum FinishStatus {
     Finished,
-    DNF,
-    DNS,
-    DSQ,
+    Dnf,
+    Dns,
+    Dsq,
 }
 
 #[derive(SimpleObject, Deserialize, Clone, Copy, PartialEq, Eq)]
