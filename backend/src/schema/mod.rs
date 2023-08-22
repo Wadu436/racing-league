@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use async_graphql::{
     scalar, ComplexObject, Context, EmptyMutation, EmptySubscription, Enum, Object, SimpleObject,
 };
@@ -5,9 +7,11 @@ use async_graphql::{Error, ID};
 
 use async_graphql::extensions::ApolloTracing;
 use derive_more::{Add, Constructor, From, Into};
+use futures::future::join_all;
 use serde::Deserialize;
 use serde_with::serde_as;
 use serde_with::DurationMilliSeconds;
+use tokio::join;
 use uuid::Uuid;
 
 pub mod data;
@@ -64,6 +68,26 @@ pub struct League {
     status: Status,
 }
 
+// TODO: Add team_id here somehow
+#[derive(SimpleObject, PartialEq, PartialOrd, Ord, Eq)]
+#[graphql(complex)]
+pub struct WdcLeaderboardEntry {
+    points: u32,
+    #[graphql(skip)]
+    user_id: ID,
+}
+
+#[ComplexObject]
+impl WdcLeaderboardEntry {
+    async fn user<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .users
+            .iter()
+            .find(|user| user.id == self.user_id)
+            .ok_or(Error::new("User not found"))
+    }
+}
+
 #[ComplexObject]
 impl League {
     async fn events<'a>(&self, ctx: &Context<'a>) -> Vec<&'a Event> {
@@ -88,6 +112,47 @@ impl League {
                 event.league_id == self.id && event.championship_order == championship_order
             })
             .ok_or(Error::new("Event not found"))
+    }
+
+    // TODO implement countback
+    async fn wdc_leaderboard(&self, ctx: &Context<'_>) -> Result<Vec<WdcLeaderboardEntry>, Error> {
+        let events = self.events(ctx).await?;
+
+        // Why do the results disappear when I do flatten() ?
+        let sessions = join_all(
+            events
+                .iter()
+                .map(|event| event.sessions(ctx))
+                .collect::<Vec<_>>(),
+        )
+        .await
+        .into_iter()
+        .flatten()
+        .flatten()
+        .collect::<Vec<_>>();
+
+        let mut leaderboard_hashmap: HashMap<ID, u32> = HashMap::new();
+
+        for session in sessions.iter() {
+            for participant in session.participants.iter() {
+                let points = participant.points(ctx).await?;
+
+                leaderboard_hashmap
+                    .entry(participant.user_id.clone())
+                    .and_modify(|entry| {
+                        *entry += points;
+                    })
+                    .or_insert(points);
+            }
+        }
+
+        let mut entries = leaderboard_hashmap
+            .drain()
+            .map(|(user_id, points)| WdcLeaderboardEntry { user_id, points })
+            .collect::<Vec<_>>();
+        entries.sort_by(|a, b| b.cmp(a));
+
+        Ok(entries)
     }
 }
 

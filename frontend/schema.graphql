@@ -50,6 +50,7 @@ type League {
   id: ID!
   name: String!
   status: Status!
+  wdcLeaderboard: [WdcLeaderboardEntry!]!
 }
 
 type Overtake {
@@ -127,4 +128,9 @@ type User {
   id: ID!
   name: String!
   nationality: String!
+}
+
+type WdcLeaderboardEntry {
+  points: Int!
+  user: User!
 }
