@@ -20,7 +20,37 @@
 			Events
 			{#each $League.data?.league.events || [] as event}
 				<a
-					href="/league/{$League.data?.league.id}/event/{event.championshipOrder}"
+					href="/session/{event.sessions.sort((a, b) => {
+						if (a.sessionType == b.sessionType) {
+							return 0;
+						}
+						if (a.sessionType == 'RACE') {
+							return -1;
+						} else if (b.sessionType == 'RACE') {
+							return 1;
+						}
+						if (a.sessionType == 'SPRINT') {
+							return -1;
+						} else if (b.sessionType == 'SPRINT') {
+							return 1;
+						}
+						if (a.sessionType == 'QUALIFYING') {
+							return  -1;
+						} else if (b.sessionType == 'QUALIFYING') {
+							return 1;
+						}
+						if (a.sessionType == 'SPRINT_QUALIFYING') {
+							return -1;
+						} else if (b.sessionType == 'SPRINT_QUALIFYING') {
+							return 1;
+						}
+						if (a.sessionType == 'PRACTICE') {
+							return -1;
+						} else if (b.sessionType == 'PRACTICE') {
+							return 1;
+						}
+						return 0;
+					})[0]?.id}"
 					class="bg-gray-200 p-4 rounded-lg mb-2 flex justify-start"
 				>
 					<div class="flex flex-col justify-center w-[4.1rem]">

@@ -70,7 +70,7 @@
         "user": "charles",
         "team": "RBR",
         "classification": {
-          "finish_status": "DNF",
+          "finish_status": "Dnf",
           "position": 3
         },
         "laps": [
@@ -101,7 +101,7 @@
         "user": "aleks",
         "team": "Mercedes",
         "classification": {
-          "finish_status": "DNS",
+          "finish_status": "Dns",
           "position": 4
         },
         "laps": [
@@ -132,7 +132,7 @@
         "user": "nam",
         "team": "RBR",
         "classification": {
-          "finish_status": "DSQ",
+          "finish_status": "Dsq",
           "position": 5
         },
         "laps": [
@@ -233,7 +233,7 @@
         "user": "nam",
         "team": "RBR",
         "classification": {
-          "finish_status": "DSQ",
+          "finish_status": "Dsq",
           "position": 5
         },
         "laps": [
@@ -264,7 +264,7 @@
         "user": "charles",
         "team": "RBR",
         "classification": {
-          "finish_status": "DNF",
+          "finish_status": "Dnf",
           "position": 3
         },
         "laps": [
@@ -295,7 +295,7 @@
         "user": "aleks",
         "team": "Mercedes",
         "classification": {
-          "finish_status": "DNS",
+          "finish_status": "Dns",
           "position": 4
         },
         "laps": [
@@ -365,7 +365,7 @@
         "user": "aleks",
         "team": "Mercedes",
         "classification": {
-          "finish_status": "DNS",
+          "finish_status": "Dns",
           "position": 4
         },
         "laps": [
@@ -396,7 +396,7 @@
         "user": "charles",
         "team": "RBR",
         "classification": {
-          "finish_status": "DNF",
+          "finish_status": "Dnf",
           "position": 3
         },
         "laps": [
@@ -458,7 +458,7 @@
         "user": "nam",
         "team": "RBR",
         "classification": {
-          "finish_status": "DSQ",
+          "finish_status": "Dsq",
           "position": 5
         },
         "laps": [
@@ -559,7 +559,7 @@
         "user": "charles",
         "team": "RBR",
         "classification": {
-          "finish_status": "DNF",
+          "finish_status": "Dnf",
           "position": 3
         },
         "laps": [
@@ -590,7 +590,7 @@
         "user": "aleks",
         "team": "Mercedes",
         "classification": {
-          "finish_status": "DNS",
+          "finish_status": "Dns",
           "position": 4
         },
         "laps": [
@@ -621,7 +621,7 @@
         "user": "nam",
         "team": "RBR",
         "classification": {
-          "finish_status": "DSQ",
+          "finish_status": "Dsq",
           "position": 5
         },
         "laps": [
@@ -691,7 +691,7 @@
         "user": "aleks",
         "team": "Mercedes",
         "classification": {
-          "finish_status": "DNS",
+          "finish_status": "Dns",
           "position": 4
         },
         "laps": [
@@ -722,7 +722,7 @@
         "user": "charles",
         "team": "RBR",
         "classification": {
-          "finish_status": "DNF",
+          "finish_status": "Dnf",
           "position": 3
         },
         "laps": [
@@ -784,7 +784,7 @@
         "user": "nam",
         "team": "RBR",
         "classification": {
-          "finish_status": "DSQ",
+          "finish_status": "Dsq",
           "position": 5
         },
         "laps": [

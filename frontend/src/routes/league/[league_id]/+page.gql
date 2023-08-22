@@ -5,6 +5,10 @@ query League($league_id: ID!) {
 		name
 		status
 		events {
+			sessions {
+				id
+				sessionType
+			}
 			id
 			name
 			track {
@@ -12,7 +16,7 @@ query League($league_id: ID!) {
 				name
 			}
 			championshipOrder
-            date
+			date
 		}
 	}
 }
