@@ -75,6 +75,8 @@ pub struct WdcLeaderboardEntry {
     points: u32,
     #[graphql(skip)]
     user_id: ID,
+    #[graphql(skip)]
+    team_id: ID,
 }
 
 #[ComplexObject]
@@ -85,6 +87,14 @@ impl WdcLeaderboardEntry {
             .iter()
             .find(|user| user.id == self.user_id)
             .ok_or(Error::new("User not found"))
+    }
+
+    async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .teams
+            .iter()
+            .find(|team| team.id == self.team_id)
+            .ok_or(Error::new("Team not found"))
     }
 }
 
@@ -131,7 +141,7 @@ impl League {
         .flatten()
         .collect::<Vec<_>>();
 
-        let mut leaderboard_hashmap: HashMap<ID, u32> = HashMap::new();
+        let mut leaderboard_hashmap: HashMap<ID, (u32, HashMap<ID, u32>)> = HashMap::new();
 
         for session in sessions.iter() {
             for participant in session.participants.iter() {
@@ -140,16 +150,27 @@ impl League {
                 leaderboard_hashmap
                     .entry(participant.user_id.clone())
                     .and_modify(|entry| {
-                        *entry += points;
+                        entry.0 += points;
                     })
-                    .or_insert(points);
+                    .or_insert((points, HashMap::from([(participant.team_id.clone(), 1)])));
             }
         }
 
         let mut entries = leaderboard_hashmap
             .drain()
-            .map(|(user_id, points)| WdcLeaderboardEntry { user_id, points })
-            .collect::<Vec<_>>();
+            .map(|(user_id, (points, team_count))| {
+                Ok(WdcLeaderboardEntry {
+                    user_id,
+                    points,
+                    team_id: team_count
+                        .iter()
+                        .max_by_key(|(k, v)| *v)
+                        .ok_or(Error::new("Team not found"))?
+                        .0
+                        .clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, Error>>()?;
         entries.sort_by(|a, b| b.cmp(a));
 
         Ok(entries)
@@ -197,11 +218,20 @@ impl Event {
             .collect()
     }
 
-    async fn points_rule(&self, _ctx: &Context<'_>) -> PointsRule {
-        PointsRule {
-            points_per_position: vec![25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
-            points_for_pole: 0,
-            points_for_fastest_lap: 1,
+    async fn points_rule(&self, _ctx: &Context<'_>, session_type: SessionType) -> PointsRule {
+        match session_type {
+            SessionType::Race => PointsRule {
+                points_per_position: vec![25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
+                points_for_fastest_lap: 1,
+            },
+            SessionType::Sprint => PointsRule {
+                points_per_position: vec![8, 7, 6, 5, 4, 3, 2, 1],
+                points_for_fastest_lap: 1,
+            },
+            _ => PointsRule {
+                points_per_position: vec![],
+                points_for_fastest_lap: 0,
+            },
         }
     }
 }
@@ -209,7 +239,6 @@ impl Event {
 #[derive(SimpleObject, Deserialize)]
 pub struct PointsRule {
     points_per_position: Vec<u32>,
-    points_for_pole: u32,
     points_for_fastest_lap: u32,
 }
 
@@ -253,6 +282,7 @@ pub struct Session {
     #[graphql(skip)]
     event_id: ID,
     session_type: SessionType,
+    // TODO these should be participants per Event, not per session (it shouldnt be possible to switch teams between sessions inside of an event)
     participants: Vec<SessionParticipant>,
     #[graphql(skip)]
     fastest_lap: ID,
@@ -407,32 +437,34 @@ impl SessionParticipant {
     async fn points<'a>(&'a self, ctx: &Context<'_>) -> Result<u32, Error> {
         let session = self.session(ctx).await?;
 
-        let points_rule = session.event(ctx).await?.points_rule(ctx).await?;
+        let points_rule = session
+            .event(ctx)
+            .await?
+            .points_rule(ctx, session.session_type)
+            .await?;
 
-        Ok(match session.session_type {
-            SessionType::Race => {
-                let points = if points_rule.points_per_position.len()
-                    >= self.classification.position as usize
-                    && self.classification.position > 0
-                {
-                    points_rule.points_per_position[(self.classification.position - 1) as usize]
-                } else {
-                    0
-                };
+        let points = if self.classification.finish_status != FinishStatus::Finished {
+            0
+        } else {
+            let points = if points_rule.points_per_position.len()
+                >= self.classification.position as usize
+                && self.classification.position > 0
+            {
+                points_rule.points_per_position[(self.classification.position - 1) as usize]
+            } else {
+                0
+            };
 
-                let fastest_lap = if session.fastest_lap(ctx).await?.id == self.user_id {
-                    1
-                } else {
-                    0
-                };
+            let fastest_lap = if session.fastest_lap(ctx).await?.id == self.user_id {
+                points_rule.points_for_fastest_lap
+            } else {
+                0
+            };
 
-                points + fastest_lap
-            }
-            SessionType::Qualifying => 0,
-            SessionType::Sprint => 0,
-            SessionType::SprintQualifying => 0,
-            SessionType::Practice => 0,
-        })
+            points + fastest_lap
+        };
+
+        Ok(points)
     }
 
     async fn session<'a>(&self, ctx: &Context<'a>) -> Result<&'a Session, Error> {

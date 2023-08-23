@@ -18,5 +18,15 @@ query League($league_id: ID!) {
 			championshipOrder
 			date
 		}
+		wdcLeaderboard {
+			user {
+				name
+				nationality
+			}
+			team {
+				name
+			}
+			points
+		}
 	}
 }

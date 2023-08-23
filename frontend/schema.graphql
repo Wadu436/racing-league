@@ -16,7 +16,7 @@ type Event {
   id: ID!
   league: League!
   name: String!
-  pointsRule: PointsRule!
+  pointsRule(sessionType: SessionType!): PointsRule!
   sessions: [Session!]!
   track: Track!
 }
@@ -62,7 +62,6 @@ type Overtake {
 
 type PointsRule {
   pointsForFastestLap: Int!
-  pointsForPole: Int!
   pointsPerPosition: [Int!]!
 }
 
@@ -132,5 +131,6 @@ type User {
 
 type WdcLeaderboardEntry {
   points: Int!
+  team: Team!
   user: User!
 }

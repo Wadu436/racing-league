@@ -17,7 +17,7 @@
 <div>
 	<VerticalTab>
 		<div slot="left">
-			Events
+			<div>Events</div>
 			{#each $League.data?.league.events || [] as event}
 				<a
 					href="/session/{event.sessions.sort((a, b) => {
@@ -35,7 +35,7 @@
 							return 1;
 						}
 						if (a.sessionType == 'QUALIFYING') {
-							return  -1;
+							return -1;
 						} else if (b.sessionType == 'QUALIFYING') {
 							return 1;
 						}
@@ -78,7 +78,18 @@
 				</a>
 			{/each}
 		</div>
-		<div slot="right">Leaderboard</div>
+		<div slot="right">
+			<div>Leaderboard</div>
+			{#each $League.data?.league.wdcLeaderboard || [] as entry, i}
+				<div class="flex gap-2">
+					<div>{i+1}</div>
+					<div>{entry.user.name}</div>
+					<Flag alpha2={entry.user.nationality} size="m"/>
+					<div>{entry.team.name}</div>
+					<div>{entry.points} pts</div>
+				</div>
+			{/each}
+		</div>
 	</VerticalTab>
 </div>
 
