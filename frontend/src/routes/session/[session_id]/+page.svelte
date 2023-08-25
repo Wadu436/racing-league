@@ -13,7 +13,7 @@
 <div>
 	<div class="flex gap-4">
 		{#each $Session.data?.session.event.sessions || [] as session, i}
-			<a href={session.id} class:underline={session.id == $Session.data?.session.id}>
+			<a data-sveltekit-replacestate href={session.id} class:underline={session.id == $Session.data?.session.id}>
 				{session.sessionType}
 			</a>
 		{/each}
