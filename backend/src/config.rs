@@ -1,15 +1,20 @@
+use std::path::Path;
+
 use config::Config;
+use dotenv::dotenv;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct Settings {
     pub application: ApplicationSettings,
+    pub database_url: Box<str>,
 }
 
 #[derive(Deserialize)]
 pub struct ApplicationSettings {
     pub port: u16,
     pub host: Box<str>,
+    pub file_storage_path: Box<Path>,
 }
 
 pub fn get_settings() -> Result<Settings, config::ConfigError> {
@@ -24,9 +29,14 @@ pub fn get_settings() -> Result<Settings, config::ConfigError> {
         .expect("Failed to parse the `ENVIRONMENT` environment value.");
     let environment_source = format!("{}.yml", environment.as_str());
 
+    if let Environment::Local = environment {
+        dotenv().ok();
+    }
+
     let settings = Config::builder()
         .add_source(config::File::from(config_dir.join("base.yml")))
         .add_source(config::File::from(config_dir.join(environment_source)))
+        .add_source(config::Environment::default())
         .build()?;
 
     tracing::debug!(environment = environment.as_str(), "loading configuration");

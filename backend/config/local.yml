@@ -1,2 +1,3 @@
 application:
   host: 127.0.0.1
+  file_storage_path: ./tmp/filestore/

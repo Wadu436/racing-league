@@ -13,12 +13,19 @@ scalar DateTime
 type Event {
   championshipOrder: Int!
   date: DateTime!
+  entries: [EventEntry!]!
   id: ID!
   league: League!
   name: String!
   pointsRule(sessionType: SessionType!): PointsRule!
   sessions: [Session!]!
   track: Track!
+}
+
+type EventEntry {
+  id: ID!
+  team: Team!
+  user: User!
 }
 
 enum FinishStatus {
@@ -49,8 +56,13 @@ type League {
   events: [Event!]!
   id: ID!
   name: String!
-  status: Status!
+  status: LeagueStatus!
   wdcLeaderboard: [WdcLeaderboardEntry!]!
+}
+
+enum LeagueStatus {
+  ACTIVE
+  FINISHED
 }
 
 type Overtake {
@@ -82,13 +94,13 @@ type Session {
 
 type SessionParticipant {
   classification: Classification!
+  entry: EventEntry!
+  entryId: ID!
   fastestLap: Lap
   laps: [Lap!]!
   overtakes: [Overtake!]!
   points: Int!
   session: Session!
-  team: Team!
-  user: User!
 }
 
 enum SessionType {
@@ -97,11 +109,6 @@ enum SessionType {
   RACE
   SPRINT
   SPRINT_QUALIFYING
-}
-
-enum Status {
-  ACTIVE
-  FINISHED
 }
 
 type Team {

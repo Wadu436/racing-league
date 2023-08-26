@@ -5,8 +5,7 @@
     "session_type": "Qualifying",
     "participants": [
       {
-        "user": "sharl",
-        "team": "Ferrari",
+        "entry_id": "entry-2",
         "classification": {
           "finish_status": "Finished",
           "position": 1
@@ -36,8 +35,7 @@
         ]
       },
       {
-        "user": "warre",
-        "team": "Ferrari",
+        "entry_id": "entry-1",
         "classification": {
           "finish_status": "Finished",
           "position": 2
@@ -67,8 +65,7 @@
         ]
       },
       {
-        "user": "charles",
-        "team": "RBR",
+        "entry_id": "entry-3",
         "classification": {
           "finish_status": "Dnf",
           "position": 3
@@ -98,8 +95,7 @@
         ]
       },
       {
-        "user": "aleks",
-        "team": "Mercedes",
+        "entry_id": "entry-4",
         "classification": {
           "finish_status": "Dns",
           "position": 4
@@ -129,8 +125,7 @@
         ]
       },
       {
-        "user": "nam",
-        "team": "RBR",
+        "entry_id": "entry-5",
         "classification": {
           "finish_status": "Dsq",
           "position": 5
@@ -160,7 +155,7 @@
         ]
       }
     ],
-    "fastest_lap": "sharl"
+    "fastest_lap": "entry-2"
   },
   {
     "id": "session-1",
@@ -168,8 +163,7 @@
     "session_type": "Sprint",
     "participants": [
       {
-        "user": "warre",
-        "team": "Ferrari",
+        "entry_id": "entry-1",
         "classification": {
           "finish_status": "Finished",
           "position": 2
@@ -199,8 +193,7 @@
         ]
       },
       {
-        "user": "sharl",
-        "team": "Ferrari",
+        "entry_id": "entry-2",
         "classification": {
           "finish_status": "Finished",
           "position": 1
@@ -230,8 +223,7 @@
         ]
       },
       {
-        "user": "nam",
-        "team": "RBR",
+        "entry_id": "entry-5",
         "classification": {
           "finish_status": "Dsq",
           "position": 5
@@ -261,8 +253,7 @@
         ]
       },
       {
-        "user": "charles",
-        "team": "RBR",
+        "entry_id": "entry-3",
         "classification": {
           "finish_status": "Dnf",
           "position": 3
@@ -292,8 +283,7 @@
         ]
       },
       {
-        "user": "aleks",
-        "team": "Mercedes",
+        "entry_id": "entry-4",
         "classification": {
           "finish_status": "Dns",
           "position": 4
@@ -323,7 +313,7 @@
         ]
       }
     ],
-    "fastest_lap": "aleks"
+    "fastest_lap": "entry-4"
   },
   {
     "id": "session-2",
@@ -331,8 +321,7 @@
     "session_type": "Race",
     "participants": [
       {
-        "user": "sharl",
-        "team": "Ferrari",
+        "entry_id": "entry-2",
         "classification": {
           "finish_status": "Finished",
           "position": 1
@@ -362,8 +351,7 @@
         ]
       },
       {
-        "user": "aleks",
-        "team": "Mercedes",
+        "entry_id": "entry-4",
         "classification": {
           "finish_status": "Dns",
           "position": 4
@@ -393,8 +381,7 @@
         ]
       },
       {
-        "user": "charles",
-        "team": "RBR",
+        "entry_id": "entry-3",
         "classification": {
           "finish_status": "Dnf",
           "position": 3
@@ -424,8 +411,7 @@
         ]
       },
       {
-        "user": "warre",
-        "team": "Ferrari",
+        "entry_id": "entry-1",
         "classification": {
           "finish_status": "Finished",
           "position": 2
@@ -455,8 +441,7 @@
         ]
       },
       {
-        "user": "nam",
-        "team": "RBR",
+        "entry_id": "entry-5",
         "classification": {
           "finish_status": "Dsq",
           "position": 5
@@ -486,7 +471,7 @@
         ]
       }
     ],
-    "fastest_lap": "nam"
+    "fastest_lap": "entry-5"
   },
   {
     "id": "session-3",
@@ -494,8 +479,7 @@
     "session_type": "Qualifying",
     "participants": [
       {
-        "user": "sharl",
-        "team": "Ferrari",
+        "entry_id": "entry-2",
         "classification": {
           "finish_status": "Finished",
           "position": 1
@@ -525,8 +509,7 @@
         ]
       },
       {
-        "user": "warre",
-        "team": "Mercedes",
+        "entry_id": "entry-1",
         "classification": {
           "finish_status": "Finished",
           "position": 2
@@ -556,8 +539,7 @@
         ]
       },
       {
-        "user": "charles",
-        "team": "RBR",
+        "entry_id": "entry-3",
         "classification": {
           "finish_status": "Dnf",
           "position": 3
@@ -587,8 +569,7 @@
         ]
       },
       {
-        "user": "aleks",
-        "team": "Mercedes",
+        "entry_id": "entry-4",
         "classification": {
           "finish_status": "Dns",
           "position": 4
@@ -618,8 +599,7 @@
         ]
       },
       {
-        "user": "nam",
-        "team": "RBR",
+        "entry_id": "entry-5",
         "classification": {
           "finish_status": "Dsq",
           "position": 5
@@ -649,7 +629,7 @@
         ]
       }
     ],
-    "fastest_lap": "warre"
+    "fastest_lap": "entry-1"
   },
   {
     "id": "session-4",
@@ -657,8 +637,7 @@
     "session_type": "Race",
     "participants": [
       {
-        "user": "sharl",
-        "team": "Ferrari",
+        "entry_id": "entry-2",
         "classification": {
           "finish_status": "Finished",
           "position": 1
@@ -688,8 +667,7 @@
         ]
       },
       {
-        "user": "aleks",
-        "team": "Mercedes",
+        "entry_id": "entry-4",
         "classification": {
           "finish_status": "Dns",
           "position": 4
@@ -719,8 +697,7 @@
         ]
       },
       {
-        "user": "charles",
-        "team": "RBR",
+        "entry_id": "entry-3",
         "classification": {
           "finish_status": "Dnf",
           "position": 3
@@ -750,8 +727,7 @@
         ]
       },
       {
-        "user": "warre",
-        "team": "Mercedes",
+        "entry_id": "entry-1",
         "classification": {
           "finish_status": "Finished",
           "position": 2
@@ -781,8 +757,7 @@
         ]
       },
       {
-        "user": "nam",
-        "team": "RBR",
+        "entry_id": "entry-5",
         "classification": {
           "finish_status": "Dsq",
           "position": 5
@@ -812,6 +787,6 @@
         ]
       }
     ],
-    "fastest_lap": "charles"
+    "fastest_lap": "entry-3"
   }
 ]

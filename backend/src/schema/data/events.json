@@ -5,7 +5,34 @@
     "championship_order": 1,
     "date": "2023-08-12T18:00:00Z",
     "league_id": "league-1",
-    "track_id": "hockenheim"
+    "track_id": "hockenheim",
+    "entries": [
+      {
+        "id": "entry-1",
+        "user": "warre",
+        "team": "Ferrari"
+      },
+      {
+        "id": "entry-2",
+        "user": "sharl",
+        "team": "Ferrari"
+      },
+      {
+        "id": "entry-3",
+        "user": "charles",
+        "team": "RBR"
+      },
+      {
+        "id": "entry-4",
+        "user": "aleks",
+        "team": "Mercedes"
+      },
+      {
+        "id": "entry-5",
+        "user": "nam",
+        "team": "RBR"
+      }
+    ]
   },
   {
     "id": "event-2",
@@ -13,7 +40,34 @@
     "championship_order": 2,
     "date": "2023-08-19T18:00:00Z",
     "league_id": "league-1",
-    "track_id": "spa"
+    "track_id": "spa",
+    "entries": [
+      {
+        "id": "entry-1",
+        "user": "warre",
+        "team": "Ferrari"
+      },
+      {
+        "id": "entry-2",
+        "user": "sharl",
+        "team": "Ferrari"
+      },
+      {
+        "id": "entry-3",
+        "user": "charles",
+        "team": "RBR"
+      },
+      {
+        "id": "entry-4",
+        "user": "aleks",
+        "team": "Mercedes"
+      },
+      {
+        "id": "entry-5",
+        "user": "nam",
+        "team": "RBR"
+      }
+    ]
   },
   {
     "id": "event-3",
@@ -21,6 +75,33 @@
     "championship_order": 3,
     "date": "2023-08-26T18:00:00Z",
     "league_id": "league-1",
-    "track_id": "monaco"
+    "track_id": "monaco",
+    "entries": [
+      {
+        "id": "entry-1",
+        "user": "warre",
+        "team": "Ferrari"
+      },
+      {
+        "id": "entry-2",
+        "user": "sharl",
+        "team": "Ferrari"
+      },
+      {
+        "id": "entry-3",
+        "user": "charles",
+        "team": "RBR"
+      },
+      {
+        "id": "entry-4",
+        "user": "aleks",
+        "team": "Mercedes"
+      },
+      {
+        "id": "entry-5",
+        "user": "nam",
+        "team": "RBR"
+      }
+    ]
   }
 ]

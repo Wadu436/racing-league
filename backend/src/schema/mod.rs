@@ -11,7 +11,6 @@ use futures::future::join_all;
 use serde::Deserialize;
 use serde_with::serde_as;
 use serde_with::DurationMilliSeconds;
-use tokio::join;
 use uuid::Uuid;
 
 pub mod data;
@@ -55,7 +54,7 @@ scalar!(Laptime);
 
 // TODO: add an alternative here too for leagues that havent started yet
 #[derive(Enum, Copy, Clone, PartialEq, Eq, Deserialize)]
-pub enum Status {
+pub enum LeagueStatus {
     Active,
     Finished,
 }
@@ -65,7 +64,7 @@ pub enum Status {
 pub struct League {
     id: ID,
     name: String,
-    status: Status,
+    status: LeagueStatus,
 }
 
 // TODO: Add team_id here somehow
@@ -147,12 +146,14 @@ impl League {
             for participant in session.participants.iter() {
                 let points = participant.points(ctx).await?;
 
+                let entry = participant.entry(ctx).await?;
+
                 leaderboard_hashmap
-                    .entry(participant.user_id.clone())
+                    .entry(entry.user_id.clone())
                     .and_modify(|entry| {
                         entry.0 += points;
                     })
-                    .or_insert((points, HashMap::from([(participant.team_id.clone(), 1)])));
+                    .or_insert((points, HashMap::from([(entry.team_id.clone(), 1)])));
             }
         }
 
@@ -164,7 +165,7 @@ impl League {
                     points,
                     team_id: team_count
                         .iter()
-                        .max_by_key(|(k, v)| *v)
+                        .max_by_key(|(_, v)| *v)
                         .ok_or(Error::new("Team not found"))?
                         .0
                         .clone(),
@@ -188,6 +189,7 @@ pub struct Event {
     track_id: ID,
     #[graphql(skip)]
     league_id: ID,
+    entries: Vec<EventEntry>,
 }
 
 #[ComplexObject]
@@ -284,6 +286,7 @@ pub struct Session {
     session_type: SessionType,
     // TODO these should be participants per Event, not per session (it shouldnt be possible to switch teams between sessions inside of an event)
     participants: Vec<SessionParticipant>,
+    // Entry fastest lap
     #[graphql(skip)]
     fastest_lap: ID,
 }
@@ -418,12 +421,7 @@ pub struct Classification {
 #[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
 pub struct SessionParticipant {
-    #[serde(rename = "user")]
-    #[graphql(skip)]
-    user_id: ID,
-    #[serde(rename = "team")]
-    #[graphql(skip)]
-    team_id: ID,
+    entry_id: ID,
     #[serde(skip)]
     #[graphql(skip)]
     session_id: ID,
@@ -455,7 +453,7 @@ impl SessionParticipant {
                 0
             };
 
-            let fastest_lap = if session.fastest_lap(ctx).await?.id == self.user_id {
+            let fastest_lap = if session.fastest_lap(ctx).await?.id == self.entry_id {
                 points_rule.points_for_fastest_lap
             } else {
                 0
@@ -487,6 +485,33 @@ impl SessionParticipant {
         vec![]
     }
 
+    async fn entry<'a>(&self, ctx: &Context<'a>) -> Result<&'a EventEntry, Error> {
+        let session = self.session(ctx).await?;
+
+        let event = session.event(ctx).await?;
+
+        event
+            .entries
+            .iter()
+            .find(|entry| entry.id == self.entry_id)
+            .ok_or(Error::new("Entry not found"))
+    }
+}
+
+#[derive(SimpleObject, Deserialize)]
+#[graphql(complex)]
+pub struct EventEntry {
+    id: ID,
+    #[serde(rename = "user")]
+    #[graphql(skip)]
+    user_id: ID,
+    #[serde(rename = "team")]
+    #[graphql(skip)]
+    team_id: ID,
+}
+
+#[ComplexObject]
+impl EventEntry {
     async fn user<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
         ctx.data_unchecked::<data::Data>()
             .users

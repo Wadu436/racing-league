@@ -29,14 +29,14 @@ impl Data {
         let teams = read_data!("teams.json", Team);
         let leagues = read_data!("leagues.json", League);
         let events = read_data!("events.json", Event);
-        let mut sessions = read_data!("sessions.json", Session);
+        let sessions = read_data!("sessions.json", Session);
         let tracks = read_data!("tracks.json", Track);
 
-        for session in sessions.iter_mut() {
-            session.participants.iter_mut().for_each(|participant| {
-                participant.session_id = session.id.clone();
-            })
-        }
+        // for session in sessions.iter_mut() {
+        //     session.participants.iter_mut().for_each(|participant| {
+        //         participant.session_id = session.id.clone();
+        //     })
+        // }
 
         Self {
             users,
