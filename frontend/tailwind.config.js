@@ -9,15 +9,15 @@ export default {
 		colors: {
 			transparent: 'transparent',
 			current: 'currentColor',
-      primary: colors.violet,
-      secondary: colors.blue,
+			primary: colors.violet,
+			secondary: colors.blue,
 
 			black: colors.black,
 			white: colors.white,
 			gray: colors.slate,
 
 			green: colors.emerald,
-      red: colors.rose,
+			red: colors.rose,
 			purple: colors.violet,
 			yellow: colors.amber,
 			pink: colors.fuchsia

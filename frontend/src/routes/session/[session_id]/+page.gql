@@ -1,4 +1,4 @@
-query Session($session_id: ID!) {
+query SessionQuery($session_id: ID!) {
 	session(sessionId: $session_id) {
 		id
 		sessionType
@@ -12,19 +12,18 @@ query Session($session_id: ID!) {
 				sessionType
 			}
 		}
-		participants {
-			user {
+		entries {
+			driver {
 				id
 				name
 				nationality
 			}
 			team {
+				id
 				name
 			}
-			classification {
-				position
-				finishStatus
-			}
+			finishPosition
+			finishStatus
 			fastestLap {
 				laptimeInMs
 			}

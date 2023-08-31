@@ -1,0 +1,27 @@
+[
+    {
+        "league": "league-1",
+        "driver": "warre",
+        "team": "Ferrari"
+      },
+      {
+        "league": "league-1",
+        "driver": "sharl",
+        "team": "Ferrari"
+      },
+      {
+        "league": "league-1",
+        "driver": "charles",
+        "team": "RBR"
+      },
+      {
+        "league": "league-1",
+        "driver": "aleks",
+        "team": "Mercedes"
+      },
+      {
+        "league": "league-1",
+        "driver": "nam",
+        "team": "RBR"
+      }
+]

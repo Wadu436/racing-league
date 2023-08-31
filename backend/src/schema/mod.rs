@@ -1,17 +1,16 @@
 use std::collections::HashMap;
 
 use async_graphql::{
-    scalar, ComplexObject, Context, EmptyMutation, EmptySubscription, Enum, Object, SimpleObject,
+    ComplexObject, Context, EmptyMutation, EmptySubscription, Enum, Object, SimpleObject,
 };
 use async_graphql::{Error, ID};
 
 use async_graphql::extensions::ApolloTracing;
-use derive_more::{Add, Constructor, From, Into};
 use futures::future::join_all;
 use serde::Deserialize;
-use serde_with::serde_as;
-use serde_with::DurationMilliSeconds;
 use uuid::Uuid;
+
+use crate::auth::Claims;
 
 pub mod data;
 
@@ -19,44 +18,57 @@ pub type Schema = async_graphql::Schema<Query, EmptyMutation, EmptySubscription>
 
 pub struct Query;
 
-// TODO: create country new-type
-
-#[serde_as]
-#[derive(
-    serde::Serialize,
-    Deserialize,
-    Add,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    From,
-    Into,
-    Constructor,
-    Clone,
-    Copy,
-)]
-struct Laptime(#[serde_as(as = "DurationMilliSeconds<i64>")] chrono::Duration);
-
-impl From<Laptime> for i64 {
-    fn from(value: Laptime) -> Self {
-        value.0.num_milliseconds()
-    }
-}
-
-impl From<i64> for Laptime {
-    fn from(value: i64) -> Self {
-        Laptime(chrono::Duration::milliseconds(value))
-    }
-}
-
-scalar!(Laptime);
-
-// TODO: add an alternative here too for leagues that havent started yet
 #[derive(Enum, Copy, Clone, PartialEq, Eq, Deserialize)]
 pub enum LeagueStatus {
     Active,
     Finished,
+    Planned,
+}
+
+#[derive(Deserialize)]
+pub struct LeagueEntry {
+    #[serde(rename = "league")]
+    league_id: ID,
+    #[serde(rename = "driver")]
+    driver_id: ID,
+    #[serde(rename = "team")]
+    team_id: ID,
+}
+
+#[Object]
+impl LeagueEntry {
+    async fn league<'a>(&self, ctx: &Context<'a>) -> Result<&'a League, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .leagues
+            .iter()
+            .find(|league| league.id == self.league_id)
+            .ok_or(Error::new(format!(
+                "League {} not found",
+                self.league_id.to_string()
+            )))
+    }
+
+    async fn driver<'a>(&self, ctx: &Context<'a>) -> Result<&'a Driver, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .drivers
+            .iter()
+            .find(|driver| driver.id == self.driver_id)
+            .ok_or(Error::new(format!(
+                "Driver `{:?}` not found",
+                self.driver_id.to_string()
+            )))
+    }
+
+    async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .teams
+            .iter()
+            .find(|team| team.id == self.team_id)
+            .ok_or(Error::new(format!(
+                "Team `{}` not found",
+                self.team_id.to_string()
+            )))
+    }
 }
 
 #[derive(SimpleObject, Deserialize)]
@@ -67,25 +79,27 @@ pub struct League {
     status: LeagueStatus,
 }
 
-// TODO: Add team_id here somehow
 #[derive(SimpleObject, PartialEq, PartialOrd, Ord, Eq)]
 #[graphql(complex)]
 pub struct WdcLeaderboardEntry {
     points: u32,
     #[graphql(skip)]
-    user_id: ID,
+    driver_id: ID,
     #[graphql(skip)]
     team_id: ID,
 }
 
 #[ComplexObject]
 impl WdcLeaderboardEntry {
-    async fn user<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
+    async fn driver<'a>(&self, ctx: &Context<'a>) -> Result<&'a Driver, Error> {
         ctx.data_unchecked::<data::Data>()
-            .users
+            .drivers
             .iter()
-            .find(|user| user.id == self.user_id)
-            .ok_or(Error::new("User not found"))
+            .find(|driver| driver.id == self.driver_id)
+            .ok_or(Error::new(format!(
+                "Driver `{:?}` not found",
+                self.driver_id
+            )))
     }
 
     async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
@@ -105,6 +119,15 @@ impl League {
         data.events
             .iter()
             .filter(|event| event.league_id == self.id)
+            .collect()
+    }
+
+    async fn entries<'a>(&self, ctx: &Context<'a>) -> Vec<&'a LeagueEntry> {
+        let data = ctx.data_unchecked::<data::Data>();
+
+        data.league_entries
+            .iter()
+            .filter(|entry| entry.league_id == self.id)
             .collect()
     }
 
@@ -143,13 +166,13 @@ impl League {
         let mut leaderboard_hashmap: HashMap<ID, (u32, HashMap<ID, u32>)> = HashMap::new();
 
         for session in sessions.iter() {
-            for participant in session.participants.iter() {
-                let points = participant.points(ctx).await?;
+            for entry in session.entries.iter() {
+                let points = entry.points(ctx).await?;
 
-                let entry = participant.entry(ctx).await?;
+                let entry = entry.entry(ctx).await?;
 
                 leaderboard_hashmap
-                    .entry(entry.user_id.clone())
+                    .entry(entry.driver_id.clone())
                     .and_modify(|entry| {
                         entry.0 += points;
                     })
@@ -159,9 +182,9 @@ impl League {
 
         let mut entries = leaderboard_hashmap
             .drain()
-            .map(|(user_id, (points, team_count))| {
+            .map(|(driver_id, (points, team_count))| {
                 Ok(WdcLeaderboardEntry {
-                    user_id,
+                    driver_id,
                     points,
                     team_id: team_count
                         .iter()
@@ -244,35 +267,15 @@ pub struct PointsRule {
     points_for_fastest_lap: u32,
 }
 
-// #[derive(Deserialize)]
-// pub struct Entry {
-
-// }
-
-// #[Object]
-// impl Entry {
-//     async fn user<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
-//         ctx.data_unchecked::<data::Data>()
-//             .users
-//             .iter()
-//             .find(|user| user.id == self.user_id)
-//             .ok_or(Error::new("User not found"))
-//     }
-
-//     async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
-//         ctx.data_unchecked::<data::Data>()
-//             .teams
-//             .iter()
-//             .find(|team| team.id == self.team_id)
-//             .ok_or(Error::new("Team not found"))
-//     }
-// }
-
 #[derive(Enum, Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
 pub enum SessionType {
     Race,
+    Q1,
+    Q2,
+    Q3,
+    ShortQualifying,
+    OneShotQualifying,
     Sprint,
-    Qualifying, // TODO! Figure out whether full Qualifying should be one session or three session Q1, Q2, Q3?
     SprintQualifying,
     Practice,
 }
@@ -284,8 +287,8 @@ pub struct Session {
     #[graphql(skip)]
     event_id: ID,
     session_type: SessionType,
-    // TODO these should be participants per Event, not per session (it shouldnt be possible to switch teams between sessions inside of an event)
-    participants: Vec<SessionParticipant>,
+    // TODO these should be entries per Event, not per session (it shouldnt be possible to switch teams between sessions inside of an event)
+    entries: Vec<SessionEntry>,
     // Entry fastest lap
     #[graphql(skip)]
     fastest_lap: ID,
@@ -301,136 +304,82 @@ impl Session {
             .ok_or(Error::new("Event not found"))
     }
 
-    async fn fastest_lap<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
+    async fn fastest_lap<'a>(&self, ctx: &Context<'a>) -> Result<&'a Driver, Error> {
         ctx.data_unchecked::<data::Data>()
-            .users
+            .drivers
             .iter()
-            .find(|user| user.id == self.fastest_lap)
-            .ok_or(Error::new("User not found"))
+            .find(|driver| driver.id == self.fastest_lap)
+            .ok_or(Error::new(format!(
+                "Driver `{:?}` not found",
+                self.fastest_lap
+            )))
     }
-
-    // async fn laps(&self, _ctx: &Context<'_>) -> Vec<Lap> {
-    //     vec![
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 1,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Nam".to_owned(),
-    //             lap_type: LapType::Out,
-    //             valid: true,
-    //             tyres: Tyre::Soft,
-    //         },
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 2,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Nam".to_owned(),
-    //             lap_type: LapType::Hot,
-    //             valid: true,
-    //             tyres: Tyre::Soft,
-    //         },
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 3,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Nam".to_owned(),
-    //             lap_type: LapType::In,
-    //             valid: true,
-    //             tyres: Tyre::Soft,
-    //         },
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 4,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Nam".to_owned(),
-    //             lap_type: LapType::Out,
-    //             valid: true,
-    //             tyres: Tyre::Medium,
-    //         },
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 1,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Warre".to_owned(),
-    //             lap_type: LapType::Out,
-    //             valid: true,
-    //             tyres: Tyre::Hard,
-    //         },
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 2,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Warre".to_owned(),
-    //             lap_type: LapType::In,
-    //             valid: true,
-    //             tyres: Tyre::Hard,
-    //         },
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 3,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Warre".to_owned(),
-    //             lap_type: LapType::Out,
-    //             valid: true,
-    //             tyres: Tyre::Soft,
-    //         },
-    //         Lap {
-    //             id: ID::from(Uuid::default()),
-    //             lap_number: 4,
-    //             laptime_in_ms: (((60 + 14) * 1000) + 356).into(),
-    //             username: "Warre".to_owned(),
-    //             lap_type: LapType::Hot,
-    //             valid: true,
-    //             tyres: Tyre::Soft,
-    //         },
-    //     ]
-    // }
-
-    // async fn overtakes(&self, _ctx: &Context<'_>) -> Option<Vec<Overtake>> {
-    //     Some(vec![
-    //         Overtake {
-    //             id: ID::from(Uuid::default()),
-    //             lap: 1,
-    //             overtaken_driver_name: "Warre".to_owned(),
-    //             overtaking_driver_name: "Nam".to_owned(),
-    //         },
-    //         Overtake {
-    //             id: ID::from(Uuid::default()),
-    //             lap: 3,
-    //             overtaken_driver_name: "Nam".to_owned(),
-    //             overtaking_driver_name: "Warre".to_owned(),
-    //         },
-    //     ])
-    // }
 }
 
 #[derive(Enum, Deserialize, Clone, Copy, PartialEq, Eq)]
 pub enum FinishStatus {
-    Finished,
+    Classified,
     Dnf,
     Dns,
     Dsq,
-}
-
-#[derive(SimpleObject, Deserialize, Clone, Copy, PartialEq, Eq)]
-pub struct Classification {
-    pub finish_status: FinishStatus,
-    pub position: u32,
+    Dnq,
 }
 
 #[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
-pub struct SessionParticipant {
-    entry_id: ID,
+pub struct SessionEntry {
+    #[serde(rename = "driver")]
+    #[graphql(skip)]
+    driver_id: ID,
+    // TODO: remove this Option
+    #[serde(rename = "team")]
+    #[graphql(skip)]
+    team_id: Option<ID>,
     #[serde(skip)]
     #[graphql(skip)]
     session_id: ID,
-    classification: Classification,
+    finish_status: FinishStatus,
+    grid_position: Option<u32>,
+    finish_position: u32,
     laps: Vec<Lap>,
 }
 
 #[ComplexObject]
-impl SessionParticipant {
+impl SessionEntry {
+    async fn driver<'a>(&self, ctx: &Context<'a>) -> Result<&'a Driver, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .drivers
+            .iter()
+            .find(|d| d.id == self.driver_id)
+            .ok_or(Error::new(format!(
+                "Driver `{:?}` not found",
+                self.driver_id
+            )))
+    }
+
+    async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
+        let team_id = if let Some(team_id) = &self.team_id {
+            team_id.clone()
+        } else {
+            ctx.data_unchecked::<data::Data>()
+                .league_entries
+                .iter()
+                .find(|le| le.driver_id == self.driver_id)
+                .map(|le| le.team_id.clone())
+                .ok_or(Error::new(format!(
+                    "League Entry `{:?}` not found",
+                    self.driver_id
+                )))?
+                .clone()
+        };
+
+        ctx.data_unchecked::<data::Data>()
+            .teams
+            .iter()
+            .find(|t| t.id == team_id)
+            .ok_or(Error::new(format!("Team `{:?}` not found", team_id)))
+    }
+
     // TODO do this good
     async fn points<'a>(&'a self, ctx: &Context<'_>) -> Result<u32, Error> {
         let session = self.session(ctx).await?;
@@ -441,19 +390,18 @@ impl SessionParticipant {
             .points_rule(ctx, session.session_type)
             .await?;
 
-        let points = if self.classification.finish_status != FinishStatus::Finished {
+        let points = if self.finish_status != FinishStatus::Classified {
             0
         } else {
-            let points = if points_rule.points_per_position.len()
-                >= self.classification.position as usize
-                && self.classification.position > 0
+            let points = if points_rule.points_per_position.len() >= self.finish_position as usize
+                && self.finish_position > 0
             {
-                points_rule.points_per_position[(self.classification.position - 1) as usize]
+                points_rule.points_per_position[(self.finish_position - 1) as usize]
             } else {
                 0
             };
 
-            let fastest_lap = if session.fastest_lap(ctx).await?.id == self.entry_id {
+            let fastest_lap = if session.fastest_lap == self.driver_id {
                 points_rule.points_for_fastest_lap
             } else {
                 0
@@ -470,7 +418,10 @@ impl SessionParticipant {
             .sessions
             .iter()
             .find(|session| session.id == self.session_id)
-            .ok_or(Error::new("Session not found"))
+            .ok_or(Error::new(format!(
+                "Session `{:?}` not found",
+                self.session_id
+            )))
     }
 
     async fn fastest_lap<'a>(&'a self, _ctx: &Context<'_>) -> Option<&'a Lap> {
@@ -493,31 +444,40 @@ impl SessionParticipant {
         event
             .entries
             .iter()
-            .find(|entry| entry.id == self.entry_id)
+            .find(|entry| entry.driver_id == self.driver_id)
             .ok_or(Error::new("Entry not found"))
     }
 }
 
-#[derive(SimpleObject, Deserialize)]
-#[graphql(complex)]
+#[derive(Deserialize)]
 pub struct EventEntry {
-    id: ID,
-    #[serde(rename = "user")]
-    #[graphql(skip)]
-    user_id: ID,
+    #[serde(skip)]
+    event_id: ID,
+    #[serde(rename = "driver")]
+    driver_id: ID,
     #[serde(rename = "team")]
-    #[graphql(skip)]
     team_id: ID,
 }
 
-#[ComplexObject]
+#[Object]
 impl EventEntry {
-    async fn user<'a>(&self, ctx: &Context<'a>) -> Result<&'a User, Error> {
+    async fn event<'a>(&self, ctx: &Context<'a>) -> Result<&'a Event, Error> {
         ctx.data_unchecked::<data::Data>()
-            .users
+            .events
             .iter()
-            .find(|user| user.id == self.user_id)
-            .ok_or(Error::new("User not found"))
+            .find(|e| e.id == self.event_id)
+            .ok_or(Error::new(format!("Event `{:?}` not found", self.event_id)))
+    }
+
+    async fn driver<'a>(&self, ctx: &Context<'a>) -> Result<&'a Driver, Error> {
+        ctx.data_unchecked::<data::Data>()
+            .drivers
+            .iter()
+            .find(|driver| driver.id == self.driver_id)
+            .ok_or(Error::new(format!(
+                "Driver `{:?}` not found",
+                self.driver_id
+            )))
     }
 
     async fn team<'a>(&self, ctx: &Context<'a>) -> Result<&'a Team, Error> {
@@ -534,10 +494,12 @@ pub enum LapType {
     In,
     Out,
     Hot,
+    Sc,
+    Vsc,
 }
 
 #[derive(Enum, Copy, Clone, PartialEq, Eq, Deserialize)]
-pub enum Tyre {
+pub enum TyreType {
     Soft,
     Medium,
     Hard,
@@ -545,28 +507,15 @@ pub enum Tyre {
     Wet,
 }
 
-// TODO: move data to data.rs
 #[derive(SimpleObject, Deserialize)]
 // #[graphql(complex)]
 pub struct Lap {
     lap_number: u32,
-    laptime_in_ms: Laptime,
+    laptime_in_ms: u32,
     valid: bool,
     lap_type: LapType,
-    tyres: Tyre,
+    tyres: TyreType,
 }
-
-// // TODO: move data to data.rs
-// #[ComplexObject]
-// impl Lap {
-//     async fn driver(&self, _ctx: &Context<'_>) -> User {
-//         User {
-//             id: ID::from(Uuid::default()),
-//             name: self.username.clone(),
-//             nationality: "BE".to_owned(),
-//         }
-//     }
-// }
 
 #[derive(SimpleObject, Deserialize)]
 #[graphql(complex)]
@@ -579,19 +528,18 @@ pub struct Overtake {
     overtaken_driver_name: String,
 }
 
-// TODO: move data to data.rs
 #[ComplexObject]
 impl Overtake {
-    async fn overtaking_driver(&self, _ctx: &Context<'_>) -> User {
-        User {
+    async fn overtaking_driver(&self, _ctx: &Context<'_>) -> Driver {
+        Driver {
             id: ID::from(Uuid::default()),
             name: self.overtaking_driver_name.clone(),
             nationality: "BE".to_owned(),
         }
     }
 
-    async fn overtaken_driver(&self, _ctx: &Context<'_>) -> User {
-        User {
+    async fn overtaken_driver(&self, _ctx: &Context<'_>) -> Driver {
+        Driver {
             id: ID::from(Uuid::default()),
             name: self.overtaken_driver_name.clone(),
             nationality: "BE".to_owned(),
@@ -614,20 +562,25 @@ pub struct Track {
 
 // TODO Login Details, Account stuff
 #[derive(SimpleObject, Clone, Deserialize)]
-pub struct User {
+pub struct Driver {
     id: ID,
     name: String,
     nationality: String, // Alpha 2 Code
 }
 
+#[derive(SimpleObject, Clone, Deserialize)]
+pub struct Me {
+    pub sub: ID,
+}
+
 #[Object]
 impl Query {
-    async fn user<'a>(&self, ctx: &Context<'a>, id: ID) -> Result<&'a User, Error> {
+    async fn driver<'a>(&self, ctx: &Context<'a>, id: ID) -> Result<&'a Driver, Error> {
         ctx.data_unchecked::<data::Data>()
-            .users
+            .drivers
             .iter()
-            .find(|user| user.id == id)
-            .ok_or(Error::new("User not found"))
+            .find(|driver| driver.id == id)
+            .ok_or(Error::new(format!("Driver `{:?}` not found", id)))
     }
 
     async fn leagues<'a>(&self, ctx: &Context<'a>) -> &'a Vec<League> {
@@ -648,6 +601,14 @@ impl Query {
             .iter()
             .find(|league| league.id == id)
             .ok_or(Error::new("League not found"))
+    }
+
+    async fn me<'a>(&self, ctx: &Context<'a>) -> Result<Me, Error> {
+        let claims = ctx.data_opt::<Claims>().ok_or(Error::new("401 Unauthorized"))?;
+
+        Ok(Me {
+            sub: ID::from(claims.sub.clone()),
+        })
     }
 }
 

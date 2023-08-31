@@ -1,4 +1,8 @@
 {
     "javascript.preferences.importModuleSpecifier": "shortest",
-    "typescript.preferences.importModuleSpecifier": "shortest"
+    "typescript.preferences.importModuleSpecifier": "shortest",
+    "rust-analyzer.linkedProjects": [
+        "./backend/Cargo.toml"
+    ],
+    "typescript.tsdk": "/home/warre/hobby/racing-league/frontend/node_modules/typescript/lib"
 }

@@ -1,14 +1,15 @@
-type Classification {
-  finishStatus: FinishStatus!
-  position: Int!
-}
-
 """
 Implement the DateTime<Utc> scalar
 
 The input/output is a string in RFC3339 format.
 """
 scalar DateTime
+
+type Driver {
+  id: ID!
+  name: String!
+  nationality: String!
+}
 
 type Event {
   championshipOrder: Int!
@@ -23,23 +24,24 @@ type Event {
 }
 
 type EventEntry {
-  id: ID!
+  driver: Driver!
+  event: Event!
   team: Team!
-  user: User!
 }
 
 enum FinishStatus {
+  CLASSIFIED
   DNF
+  DNQ
   DNS
   DSQ
-  FINISHED
 }
 
 type Lap {
   lapNumber: Int!
   lapType: LapType!
-  laptimeInMs: Laptime!
-  tyres: Tyre!
+  laptimeInMs: Int!
+  tyres: TyreType!
   valid: Boolean!
 }
 
@@ -47,11 +49,12 @@ enum LapType {
   HOT
   IN
   OUT
+  SC
+  VSC
 }
 
-scalar Laptime
-
 type League {
+  entries: [LeagueEntry!]!
   event(championshipOrder: Int!): Event!
   events: [Event!]!
   id: ID!
@@ -60,16 +63,27 @@ type League {
   wdcLeaderboard: [WdcLeaderboardEntry!]!
 }
 
+type LeagueEntry {
+  driver: Driver!
+  league: League!
+  team: Team!
+}
+
 enum LeagueStatus {
   ACTIVE
   FINISHED
+  PLANNED
+}
+
+type Me {
+  sub: ID!
 }
 
 type Overtake {
   id: ID!
   lap: Int!
-  overtakenDriver: User!
-  overtakingDriver: User!
+  overtakenDriver: Driver!
+  overtakingDriver: Driver!
 }
 
 type PointsRule {
@@ -78,35 +92,43 @@ type PointsRule {
 }
 
 type Query {
+  driver(id: ID!): Driver!
   league(id: ID!): League!
   leagues: [League!]!
+  me: Me!
   session(sessionId: ID!): Session!
-  user(id: ID!): User!
 }
 
 type Session {
+  entries: [SessionEntry!]!
   event: Event!
-  fastestLap: User!
+  fastestLap: Driver!
   id: ID!
-  participants: [SessionParticipant!]!
   sessionType: SessionType!
 }
 
-type SessionParticipant {
-  classification: Classification!
+type SessionEntry {
+  driver: Driver!
   entry: EventEntry!
-  entryId: ID!
   fastestLap: Lap
+  finishPosition: Int!
+  finishStatus: FinishStatus!
+  gridPosition: Int
   laps: [Lap!]!
   overtakes: [Overtake!]!
   points: Int!
   session: Session!
+  team: Team!
 }
 
 enum SessionType {
+  ONE_SHOT_QUALIFYING
   PRACTICE
-  QUALIFYING
+  Q1
+  Q2
+  Q3
   RACE
+  SHORT_QUALIFYING
   SPRINT
   SPRINT_QUALIFYING
 }
@@ -122,7 +144,7 @@ type Track {
   name: String!
 }
 
-enum Tyre {
+enum TyreType {
   HARD
   INTER
   MEDIUM
@@ -130,14 +152,8 @@ enum Tyre {
   WET
 }
 
-type User {
-  id: ID!
-  name: String!
-  nationality: String!
-}
-
 type WdcLeaderboardEntry {
+  driver: Driver!
   points: Int!
   team: Team!
-  user: User!
 }

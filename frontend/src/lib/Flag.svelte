@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { countryCodeAlpha2Dict, flagUrlFromAlpha2 } from "./countryCodes";
-
+	import { countryCodeAlpha2Dict, flagUrlFromAlpha2 } from './countryCodes';
 
 	export let alpha2: string;
-    export let size: "l" | "m" | "s" = "l";
+	export let size: 'l' | 'm' | 's' = 'l';
 </script>
 
 <img

@@ -3,15 +3,13 @@
 
 	export let data: PageData;
 
-	let foo = 'Bar!';
-
-	$: ({ Info } = data);
+	$: ({ InfoQuery } = data);
 </script>
 
-{#if $Info.fetching}
+{#if $InfoQuery.fetching}
 	<div>Loading...</div>
-{:else if $Info.data}
-	{#each $Info.data.leagues as league}
+{:else if $InfoQuery.data}
+	{#each $InfoQuery.data.leagues as league}
 		<!-- TODO: Add a League card here, maybe with a picture? -->
 		<div>
 			<a href="/league/{league.id}">{league.name}</a>

@@ -1,7 +1,7 @@
-query Info {
-    leagues {
-        id
-        name
-        status
-    }
+query InfoQuery {
+	leagues {
+		id
+		name
+		status
+	}
 }

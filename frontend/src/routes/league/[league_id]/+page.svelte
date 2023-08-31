@@ -1,24 +1,22 @@
 <script lang="ts">
 	import Flag from '$lib/Flag.svelte';
 	import VerticalTab from '$lib/VerticalTab.svelte';
-	import { countryCodeAlpha2Dict, flagUrlFromAlpha2 } from '$lib/countryCodes';
 	import type { PageData } from './$houdini';
 	export let data: PageData;
-	import { Icon } from 'svelte-flags';
 
-	$: ({ League } = data);
+	$: ({ LeagueQuery } = data);
 </script>
 
 <h1>
-	<span>{$League.data?.league.name}</span>
-	<span>({$League.data?.league.status})</span>
+	<span>{$LeagueQuery.data?.league.name}</span>
+	<span>({$LeagueQuery.data?.league.status})</span>
 </h1>
 
 <div>
 	<VerticalTab>
 		<div slot="left">
 			<div>Events</div>
-			{#each $League.data?.league.events || [] as event}
+			{#each $LeagueQuery.data?.league.events || [] as event}
 				<a
 					href="/session/{event.sessions.sort((a, b) => {
 						if (a.sessionType == b.sessionType) {
@@ -34,9 +32,9 @@
 						} else if (b.sessionType == 'SPRINT') {
 							return 1;
 						}
-						if (a.sessionType == 'QUALIFYING') {
+						if (a.sessionType == 'SHORT_QUALIFYING') {
 							return -1;
-						} else if (b.sessionType == 'QUALIFYING') {
+						} else if (b.sessionType == 'SHORT_QUALIFYING') {
 							return 1;
 						}
 						if (a.sessionType == 'SPRINT_QUALIFYING') {
@@ -80,11 +78,11 @@
 		</div>
 		<div slot="right">
 			<div>Leaderboard</div>
-			{#each $League.data?.league.wdcLeaderboard || [] as entry, i}
+			{#each $LeagueQuery.data?.league.wdcLeaderboard || [] as entry, i}
 				<div class="flex gap-2">
-					<div>{i+1}</div>
-					<div>{entry.user.name}</div>
-					<Flag alpha2={entry.user.nationality} size="m"/>
+					<div>{i + 1}</div>
+					<div>{entry.driver.name}</div>
+					<Flag alpha2={entry.driver.nationality} size="m" />
 					<div>{entry.team.name}</div>
 					<div>{entry.points} pts</div>
 				</div>

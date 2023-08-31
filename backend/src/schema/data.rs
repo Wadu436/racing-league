@@ -1,4 +1,4 @@
-use super::{Event, League, Session, Team, Track, User};
+use super::{Event, League, Session, Team, Track, Driver, LeagueEntry};
 
 macro_rules! read_data {
     ($file:expr, $type:ty) => {
@@ -15,36 +15,39 @@ macro_rules! read_data {
 }
 
 pub(crate) struct Data {
-    pub users: Vec<User>,
+    pub drivers: Vec<Driver>,
     pub teams: Vec<Team>,
     pub leagues: Vec<super::League>,
     pub events: Vec<super::Event>,
     pub sessions: Vec<super::Session>,
     pub tracks: Vec<super::Track>,
+    pub league_entries: Vec<LeagueEntry>,
 }
 
 impl Data {
     pub fn new() -> Self {
-        let users = read_data!("users.json", User);
+        let users = read_data!("users.json", Driver);
         let teams = read_data!("teams.json", Team);
         let leagues = read_data!("leagues.json", League);
         let events = read_data!("events.json", Event);
-        let sessions = read_data!("sessions.json", Session);
+        let mut sessions = read_data!("sessions.json", Session);
         let tracks = read_data!("tracks.json", Track);
+        let league_entries = read_data!("league_entries.json", LeagueEntry);
 
-        // for session in sessions.iter_mut() {
-        //     session.participants.iter_mut().for_each(|participant| {
-        //         participant.session_id = session.id.clone();
-        //     })
-        // }
+        for session in sessions.iter_mut() {
+            session.entries.iter_mut().for_each(|e| {
+                e.session_id = session.id.clone();
+            })
+        }
 
         Self {
-            users,
+            drivers: users,
             leagues,
             events,
             teams,
             sessions,
             tracks,
+            league_entries
         }
     }
 }

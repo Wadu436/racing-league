@@ -1,5 +1,5 @@
 # Write your query or mutation here
-query League($league_id: ID!) {
+query LeagueQuery($league_id: ID!) {
 	league(id: $league_id) {
 		id
 		name
@@ -19,7 +19,7 @@ query League($league_id: ID!) {
 			date
 		}
 		wdcLeaderboard {
-			user {
+			driver {
 				name
 				nationality
 			}
