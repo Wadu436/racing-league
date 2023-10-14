@@ -23,7 +23,7 @@ export const actions: Actions = {
 		const response = await newUserMutation.mutate({ username, steamId, eaId }, { event });
 
         if (response.errors == null) {
-            throw redirect(303, '/');
+            throw redirect(307, '/');
         }
 
 		return response;

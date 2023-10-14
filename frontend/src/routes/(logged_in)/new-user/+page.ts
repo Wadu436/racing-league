@@ -6,10 +6,11 @@ export const load: PageLoad = async (event) => {
 	const newUserQuery = await load_NewUserQuery({ event });
 
 	if (newUserQuery.NewUserQuery.observer.state.data?.me?.username) {
-		throw redirect(302, event.url.searchParams.get('redirect') ?? '/');
+		throw redirect(307, event.url.searchParams.get('redirect') ?? '/');
 	}
 
 	return {
-		...newUserQuery
+		...newUserQuery,
+		...await event.parent()
 	};
 };
