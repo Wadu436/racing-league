@@ -18,20 +18,13 @@ fn calculate_invalidation_time(
     headers: &reqwest::header::HeaderMap,
 ) -> Option<chrono::DateTime<chrono::Utc>> {
     // Check if there's an expires header
-    if let Some(expiry) = headers
-        .get(reqwest::header::EXPIRES)
-        .map(|h| {
-            h.to_str()
+    if let Some(expiry) = headers.get(reqwest::header::EXPIRES).and_then(|h| {
+        h.to_str().ok().and_then(|h| {
+            chrono::NaiveDateTime::parse_from_str(h, "%a, %d %b %Y %H:%M:%S GMT")
                 .ok()
-                .map(|h| {
-                    chrono::NaiveDateTime::parse_from_str(h, "%a, %d %b %Y %H:%M:%S GMT")
-                        .ok()
-                        .map(|d| chrono::DateTime::<chrono::Utc>::from_utc(d, chrono::Utc))
-                })
-                .flatten()
+                .map(|d| chrono::DateTime::<chrono::Utc>::from_utc(d, chrono::Utc))
         })
-        .flatten()
-    {
+    }) {
         return Some(expiry);
     }
 
