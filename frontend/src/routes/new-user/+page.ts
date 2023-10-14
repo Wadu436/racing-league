@@ -5,7 +5,7 @@ import type { PageLoad } from './$houdini';
 export const load: PageLoad = async (event) => {
 	const newUserQuery = await load_NewUserQuery({ event });
 
-	if (newUserQuery.NewUserQuery.observer.state.data?.me?.sub) {
+	if (newUserQuery.NewUserQuery.observer.state.data?.me?.username) {
 		throw redirect(302, event.url.searchParams.get('redirect') ?? '/');
 	}
 

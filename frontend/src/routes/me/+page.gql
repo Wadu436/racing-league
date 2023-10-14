@@ -1,6 +1,0 @@
-query MeQuery {
-    me {
-        username
-        sub
-    }
-}

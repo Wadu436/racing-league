@@ -1,6 +1,5 @@
 query NewUserQuery {
     me {
         username
-        sub
     }
 }
