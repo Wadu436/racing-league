@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use async_graphql::{
-    ComplexObject, Context, EmptyMutation, EmptySubscription, Enum, Object, SimpleObject,
-};
+use async_graphql::{ComplexObject, Context, EmptySubscription, Enum, Object, SimpleObject};
 use async_graphql::{Error, ID};
 
 use async_graphql::extensions::ApolloTracing;
@@ -10,13 +8,13 @@ use futures::future::join_all;
 use serde::Deserialize;
 use uuid::Uuid;
 
-use crate::auth::Claims;
+use crate::queries::Client;
 
 pub mod data;
+pub mod mutation;
+pub mod query;
 
-pub type Schema = async_graphql::Schema<Query, EmptyMutation, EmptySubscription>;
-
-pub struct Query;
+pub type Schema = async_graphql::Schema<query::Query, mutation::Mutation, EmptySubscription>;
 
 #[derive(Enum, Copy, Clone, PartialEq, Eq, Deserialize)]
 pub enum LeagueStatus {
@@ -42,10 +40,7 @@ impl LeagueEntry {
             .leagues
             .iter()
             .find(|league| league.id == self.league_id)
-            .ok_or(Error::new(format!(
-                "League {} not found",
-                self.league_id.to_string()
-            )))
+            .ok_or(Error::new(format!("League {} not found", *self.league_id)))
     }
 
     async fn driver<'a>(&self, ctx: &Context<'a>) -> Result<&'a Driver, Error> {
@@ -55,7 +50,7 @@ impl LeagueEntry {
             .find(|driver| driver.id == self.driver_id)
             .ok_or(Error::new(format!(
                 "Driver `{:?}` not found",
-                self.driver_id.to_string()
+                *self.driver_id
             )))
     }
 
@@ -64,10 +59,7 @@ impl LeagueEntry {
             .teams
             .iter()
             .find(|team| team.id == self.team_id)
-            .ok_or(Error::new(format!(
-                "Team `{}` not found",
-                self.team_id.to_string()
-            )))
+            .ok_or(Error::new(format!("Team `{}` not found", *self.team_id)))
     }
 }
 
@@ -370,7 +362,6 @@ impl SessionEntry {
                     "League Entry `{:?}` not found",
                     self.driver_id
                 )))?
-                .clone()
         };
 
         ctx.data_unchecked::<data::Data>()
@@ -573,48 +564,12 @@ pub struct Me {
     pub sub: ID,
 }
 
-#[Object]
-impl Query {
-    async fn driver<'a>(&self, ctx: &Context<'a>, id: ID) -> Result<&'a Driver, Error> {
-        ctx.data_unchecked::<data::Data>()
-            .drivers
-            .iter()
-            .find(|driver| driver.id == id)
-            .ok_or(Error::new(format!("Driver `{:?}` not found", id)))
-    }
+struct Db(Client);
 
-    async fn leagues<'a>(&self, ctx: &Context<'a>) -> &'a Vec<League> {
-        &ctx.data_unchecked::<data::Data>().leagues
-    }
-
-    async fn session<'a>(&self, ctx: &Context<'a>, session_id: ID) -> Result<&'a Session, Error> {
-        ctx.data_unchecked::<data::Data>()
-            .sessions
-            .iter()
-            .find(|session| session.id == session_id)
-            .ok_or(Error::new("Session not found"))
-    }
-
-    async fn league<'a>(&self, ctx: &Context<'a>, id: ID) -> Result<&'a League, Error> {
-        ctx.data_unchecked::<data::Data>()
-            .leagues
-            .iter()
-            .find(|league| league.id == id)
-            .ok_or(Error::new("League not found"))
-    }
-
-    async fn me<'a>(&self, ctx: &Context<'a>) -> Result<Me, Error> {
-        let claims = ctx.data_opt::<Claims>().ok_or(Error::new("401 Unauthorized"))?;
-
-        Ok(Me {
-            sub: ID::from(claims.sub.clone()),
-        })
-    }
-}
-
-pub fn get_schema() -> Schema {
-    Schema::build(Query, EmptyMutation, EmptySubscription)
+pub fn get_schema(db_client: Client) -> Schema {
+    Schema::build(query::Query, mutation::Mutation, EmptySubscription)
         .extension(ApolloTracing)
         .data(data::Data::new())
+        .data(Db(db_client))
         .finish()
 }

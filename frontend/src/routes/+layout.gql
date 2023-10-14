@@ -1,6 +1,5 @@
-query MeQuery {
+query RootLayoutQuery {
     me {
         username
-        sub
     }
 }

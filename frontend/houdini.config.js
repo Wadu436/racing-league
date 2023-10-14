@@ -4,7 +4,7 @@ import { DateTime, Duration } from 'luxon';
 /** @type {import('houdini').ConfigFile} */
 const config = {
 	watchSchema: {
-		url: 'http://localhost:8000'
+		url: 'http://127.0.0.1:8000'
 	},
 	plugins: {
 		'houdini-svelte': {}

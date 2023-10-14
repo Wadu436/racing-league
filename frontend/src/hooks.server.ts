@@ -56,8 +56,12 @@ const accessTokenCookieHandle: Handle = async ({ event, resolve }) => {
 
 	const token = await getToken({ req: { cookies, headers: {} }, secret: AUTH_SECRET });
 
+	console.log('token', token)
+
 	if (token?.accessToken) {
 		event.cookies.set('f1_warre_dev_access_token', token.accessToken as string, { path: '/', sameSite: 'lax'});
+	} else {
+		event.cookies.delete('f1_warre_dev_access_token', { path: '/', sameSite: 'lax'});
 	}
 
 	return await resolve(event);

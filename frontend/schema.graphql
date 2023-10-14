@@ -75,8 +75,9 @@ enum LeagueStatus {
   PLANNED
 }
 
-type Me {
-  sub: ID!
+type Mutation {
+  signup(data: SignupData!): String!
+  updateUser(data: SignupData!): String!
 }
 
 type Overtake {
@@ -95,7 +96,7 @@ type Query {
   driver(id: ID!): Driver!
   league(id: ID!): League!
   leagues: [League!]!
-  me: Me!
+  me: User
   session(sessionId: ID!): Session!
 }
 
@@ -133,6 +134,12 @@ enum SessionType {
   SPRINT_QUALIFYING
 }
 
+input SignupData {
+  eaId: String
+  steamId: String
+  username: String!
+}
+
 type Team {
   id: ID!
   name: String!
@@ -150,6 +157,27 @@ enum TyreType {
   MEDIUM
   SOFT
   WET
+}
+
+"""
+A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as
+Strings within GraphQL. UUIDs are used to assign unique identifiers to
+entities without requiring a central allocating authority.
+
+# References
+
+* [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
+* [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
+"""
+scalar UUID
+
+type User {
+  eaId: String
+  id: UUID!
+  profilePicturePath: String
+  steamId: String
+  sub: String!
+  username: String!
 }
 
 type WdcLeaderboardEntry {

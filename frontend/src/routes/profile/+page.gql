@@ -1,0 +1,8 @@
+query ProfileQuery {
+    me {
+        username
+        profilePicturePath
+        steamId
+        eaId
+    }
+}

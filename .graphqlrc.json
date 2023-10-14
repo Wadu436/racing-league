@@ -1,4 +1,9 @@
 {
-    "schema": "./frontend/schema.graphql",
-    "documents": ["./frontend/src/**/*.graphql", "./frontend/src/**/*.gql"]
+  "schema": "./frontend/schema.graphql",
+  "documents": [
+    "./frontend/src/**/*.graphql",
+    "./frontend/src/**/*.gql",
+    "./frontend/src/**/*.svelte",
+    "./frontend/src/**/*.ts"
+  ]
 }

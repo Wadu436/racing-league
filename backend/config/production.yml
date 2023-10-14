@@ -3,4 +3,4 @@ application:
   allowed_origins:
   - https://f1.warre.dev
 # TODO: update this for production
-database_url: postgres://postgres:postgres@localhost:5432/postgres
+database_url: postgres://postgres:postgres@127.0.0.1:5432/postgres

@@ -1,4 +1,4 @@
-use std::sync::{Arc};
+use std::sync::Arc;
 use tokio::sync::RwLock;
 
 use cache_control::CacheControl;
@@ -38,7 +38,7 @@ fn calculate_invalidation_time(
     // Check if there's a cache control header
     let cache_control = match headers
         .get(reqwest::header::CACHE_CONTROL)
-        .map(|c| c.to_str().map(|c| CacheControl::from_value(c)))
+        .map(|c| c.to_str().map(CacheControl::from_value))
     {
         Some(Ok(Some(cache_control))) => cache_control,
         _ => return Some(chrono::Utc::now() + chrono::Duration::hours(1)),
@@ -54,10 +54,7 @@ fn calculate_invalidation_time(
         _ => 0,
     };
 
-    if let Some(Ok(max_age)) = cache_control
-        .max_age
-        .map(|max_age| chrono::Duration::from_std(max_age))
-    {
+    if let Some(Ok(max_age)) = cache_control.max_age.map(chrono::Duration::from_std) {
         return Some(chrono::Utc::now() + max_age - chrono::Duration::seconds(age as i64));
     }
 
@@ -103,7 +100,7 @@ impl JwksCached {
         // Check if we need to refresh JWKS tokens
         debug!("Refreshing JWKS cache");
         let res = reqwest::get(self.jwks_uri.clone()).await?;
-        
+
         let invalidate_time = calculate_invalidation_time(res.headers());
         let jwks = res.json::<JwkSet>().await?;
 
@@ -138,11 +135,6 @@ pub struct Claims {
 
 impl Auth0Validator {
     pub async fn new(authority: Box<str>, audience: Box<str>) -> Result<Self> {
-        // Fetch JWKS keys
-        let jwks_uri = url::Url::parse(&format!("{}.well-known/jwks.json", authority))?;
-
-        let res = reqwest::get(jwks_uri).await?;
-
         let jwks = Arc::new(RwLock::new(JwksCached::new(authority.clone()).await?));
 
         Ok(Self {
@@ -180,4 +172,3 @@ impl Auth0Validator {
         Ok(token.claims)
     }
 }
-

@@ -11,7 +11,9 @@ async fn main() -> Result<()> {
     color_eyre::install()?;
     LogTracer::init()?;
 
-    let subscriber = tracing_subscriber::fmt().with_env_filter(EnvFilter::from_default_env()).finish();
+    let subscriber = tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::from_default_env())
+        .finish();
 
     set_global_default(subscriber).expect("Failed to set subscriber");
 

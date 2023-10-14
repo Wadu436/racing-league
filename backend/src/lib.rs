@@ -3,7 +3,7 @@ use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use auth::{Auth0Validator, Claims};
 use axum::{
     extract::State,
-    headers::{authorization::Bearer, Authorization, Cookie},
+    headers::Cookie,
     middleware::Next,
     response::{self, IntoResponse, Response},
     routing::{get, post},
@@ -27,7 +27,7 @@ use sqlx::{
 use std::{io::Cursor, str::FromStr, sync::Arc};
 use tower::ServiceBuilder;
 use tower_http::{
-    cors::{AllowOrigin, Any, CorsLayer},
+    cors::{AllowOrigin, CorsLayer},
     trace::TraceLayer,
 };
 use tower_request_id::{RequestId, RequestIdLayer};
@@ -41,6 +41,7 @@ use image::io::Reader as ImageReader;
 mod auth;
 pub mod config;
 mod filestore;
+mod queries;
 mod schema;
 
 #[derive(Clone)]
@@ -52,8 +53,9 @@ struct AppState {
 
 pub async fn run(settings: config::Settings) -> Result<()> {
     // Set up database
-    let options = PgConnectOptions::from_url(&Url::parse(&settings.database_url.expose_secret())?)?;
-    let _db_pool = PgPoolOptions::new().connect_with(options).await?;
+    let options = PgConnectOptions::from_url(&Url::parse(settings.database_url.expose_secret())?)?;
+    let db_pool = PgPoolOptions::new().connect_with(options).await?;
+    let db_client = queries::Client { db: db_pool };
 
     let mut filestore = filestore::FileStore::new(settings.application.file_storage_path)?;
 
@@ -102,7 +104,7 @@ pub async fn run(settings: config::Settings) -> Result<()> {
 
     let filestore = Arc::new(filestore);
 
-    let schema = schema::get_schema();
+    let schema = schema::get_schema(db_client);
 
     let state = AppState {
         auth_validator,
@@ -118,8 +120,6 @@ pub async fn run(settings: config::Settings) -> Result<()> {
             .map(|origin| HeaderValue::from_str(origin.as_ref()))
             .collect::<Result<Vec<_>, _>>()?,
     );
-
-    info!("Allowed origins: {:?}", allowed_origins);
 
     let app = Router::new()
         .route("/health_check", get(health_check))
@@ -185,8 +185,7 @@ async fn auth_middleware<B>(
 ) -> Response {
     // Extract the Bearer token from the Authorization header
     if let Some(access_token) = auth_cookie
-        .map(|TypedHeader(c)| c.get("f1_warre_dev_access_token").map(ToOwned::to_owned))
-        .flatten()
+        .and_then(|TypedHeader(c)| c.get("f1_warre_dev_access_token").map(ToOwned::to_owned))
     {
         match state.auth_validator.validate_token(&access_token).await {
             Ok(claims) => {

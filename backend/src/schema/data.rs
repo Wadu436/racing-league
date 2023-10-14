@@ -1,4 +1,4 @@
-use super::{Event, League, Session, Team, Track, Driver, LeagueEntry};
+use super::{Driver, Event, League, LeagueEntry, Session, Team, Track};
 
 macro_rules! read_data {
     ($file:expr, $type:ty) => {
@@ -47,7 +47,7 @@ impl Data {
             teams,
             sessions,
             tracks,
-            league_entries
+            league_entries,
         }
     }
 }
