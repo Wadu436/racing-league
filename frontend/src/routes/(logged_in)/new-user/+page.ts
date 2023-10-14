@@ -1,16 +1,12 @@
-import { load_NewUserQuery } from '$houdini';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$houdini';
 
-export const load: PageLoad = async (event) => {
-	const newUserQuery = await load_NewUserQuery({ event });
+export const load: PageLoad = async ({ parent, url }) => {
+	const data = await parent();
 
-	if (newUserQuery.NewUserQuery.observer.state.data?.me?.username) {
-		throw redirect(307, event.url.searchParams.get('redirect') ?? '/');
+	if (data.ProfileQuery.observer.state.data?.me != null) {
+		throw redirect(307, url.searchParams.get('redirect') ?? '/');
 	}
 
-	return {
-		...newUserQuery,
-		...await event.parent()
-	};
+	return data;
 };

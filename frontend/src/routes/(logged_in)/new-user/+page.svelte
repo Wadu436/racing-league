@@ -7,14 +7,14 @@
 	export let data: PageData;
     export let form: ActionData;
 
-	$: ({ NewUserQuery } = data);
+	$: ({ ProfileQuery } = data);
 </script>
 
-{#if $NewUserQuery.fetching}
+{#if $ProfileQuery.fetching}
 	<div>Fetching...</div>
-{:else if $NewUserQuery.errors}
+{:else if $ProfileQuery.errors}
 	<div>Error</div>
-{:else if $NewUserQuery.data?.me}
+{:else if $ProfileQuery.data?.me}
 	<div>You already have a user account!</div>
 {:else if $page.data.session?.user == null}
     <div>You are not logged in!</div>
