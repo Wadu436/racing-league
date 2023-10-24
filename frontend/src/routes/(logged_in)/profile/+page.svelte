@@ -19,7 +19,7 @@
 	<div>EA ID: {$ProfileQuery.data.me.eaId}</div>
 	<div>
 		Profile Picture: <img
-			class="w-48 h-48"
+			class="h-48"
 			alt={$ProfileQuery.data.me.username + "'s profile picture"}
 			src={backendServerUrl + '/files/' + $ProfileQuery.data.me.profilePicturePath}
 		/>
