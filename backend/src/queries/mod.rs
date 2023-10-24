@@ -1,6 +1,7 @@
 use async_graphql::SimpleObject;
 use serde::Deserialize;
 use sqlx::PgPool;
+use tracing::debug;
 
 #[derive(SimpleObject, Clone, Deserialize)]
 pub struct User {
@@ -37,30 +38,39 @@ impl Client {
         }
     }
 
-    pub async fn create_user(&self, data: NewUser) -> sqlx::Result<()> {
-        // TODO: profile picture
+    pub async fn create_user(&self, data: NewUser) -> sqlx::Result<User> {
+        let id = uuid::Uuid::new_v4();
         sqlx::query!(
-            "insert into users (id, sub, username, steam_id, ea_id) values ($1, $2, $3, $4, $5)",
-            uuid::Uuid::new_v4(),
+            "insert into users (id, sub, username, steam_id, ea_id, profile_picture_path) values ($1, $2, $3, $4, $5, $6)",
+            id,
             data.sub,
             data.username,
             data.steam_id,
-            data.ea_id
+            data.ea_id,
+            data.profile_picture_path
         )
         .execute(&self.db)
         .await?;
 
-        Ok(())
+        Ok(User {
+            id,
+            sub: data.sub,
+            username: data.username,
+            profile_picture_path: data.profile_picture_path,
+            steam_id: data.steam_id,
+            ea_id: data.ea_id,
+        })
     }
 
-    pub async fn update_user(&self, data: User) -> sqlx::Result<()> {
-        // TODO: profile picture
+    pub async fn update_user(&self, data: &User) -> sqlx::Result<()> {
+        debug!("profile picture path: {:?}", data.profile_picture_path);
         sqlx::query!(
-            "update users set username=$2, steam_id=$3, ea_id=$4 where id=$1",
+            "update users set username=$2, steam_id=$3, ea_id=$4, profile_picture_path=$5 where id=$1",
             data.id,
             data.username,
             data.steam_id,
-            data.ea_id
+            data.ea_id,
+            data.profile_picture_path
         )
         .execute(&self.db)
         .await?;

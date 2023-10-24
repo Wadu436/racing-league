@@ -76,8 +76,8 @@ enum LeagueStatus {
 }
 
 type Mutation {
-  signup(data: SignupData!): String!
-  updateUser(data: SignupData!): String!
+  signup(data: SignupData!): User!
+  updateUser(data: UpdateData!): User!
 }
 
 type Overtake {
@@ -136,6 +136,7 @@ enum SessionType {
 
 input SignupData {
   eaId: String
+  profilePicturePath: String
   steamId: String
   username: String!
 }
@@ -170,6 +171,14 @@ entities without requiring a central allocating authority.
 * [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
 """
 scalar UUID
+
+input UpdateData {
+  deleteProfilePicture: Boolean!
+  eaId: String
+  profilePicturePath: String
+  steamId: String
+  username: String!
+}
 
 type User {
   eaId: String

@@ -1,7 +1,8 @@
 import { HoudiniClient } from '$houdini';
+import { backendServerUrl } from './config';
 
 export default new HoudiniClient({
-	url: 'http://127.0.0.1:8000',
+	url: backendServerUrl,
 	fetchParams: () => {
 		return {
 			credentials: 'include'

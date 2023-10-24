@@ -20,7 +20,7 @@
     <div>You are not logged in!</div>
 {:else}
     {#if form?.usernameMissing}<p>The Username field is required</p>{/if}
-	<form method="POST" action="?/createUser" use:enhance>
+	<form method="POST" action="?/createUser" enctype="multipart/form-data">
 		<div>Create new account</div>
 		<div>
 			<label for="email">Email:</label>
@@ -37,6 +37,10 @@
         <div>
 			<label for="steam-id">EA ID (optional)</label>
 			<input name="steam-id" type="text"/>
+		</div>
+		<div>
+			<label for="profile-picture">Profile Picture (optional)</label>
+			<input name="profile-picture" type="file" accept="image/png, image/jpeg"/>
 		</div>
         <button>Submit</button>
 	</form>
