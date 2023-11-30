@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { backendServerUrl } from '../../../config';
+	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import type { PageData } from '../../profile/$houdini';
 
 	export let data: PageData;
 
 	$: ({ ProfileQuery } = data);
 
-	// $: profilePictureUrl = backendServerUrl + '/files/' + $ProfileQuery?.data?.me?.profilePicturePath;
+	$: profilePictureUrl =
+		$ProfileQuery?.data?.me &&
+		`${PUBLIC_BACKEND_URL}/files/${$ProfileQuery.data.me.profilePicturePath}`;
 </script>
 
 {#if $ProfileQuery.fetching}
@@ -21,7 +23,7 @@
 		Profile Picture: <img
 			class="h-48"
 			alt={$ProfileQuery.data.me.username + "'s profile picture"}
-			src={backendServerUrl + '/files/' + $ProfileQuery.data.me.profilePicturePath}
+			src={profilePictureUrl}
 		/>
 	</div>
 	<div>

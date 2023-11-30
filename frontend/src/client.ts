@@ -1,8 +1,8 @@
+import { PUBLIC_BACKEND_URL } from '$env/static/public';
 import { HoudiniClient } from '$houdini';
-import { backendServerUrl } from './config';
 
 export default new HoudiniClient({
-	url: backendServerUrl,
+	url: PUBLIC_BACKEND_URL,
 	fetchParams: () => {
 		return {
 			credentials: 'include'

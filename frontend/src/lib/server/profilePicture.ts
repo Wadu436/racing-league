@@ -1,8 +1,8 @@
-import { backendServerUrl } from '../../config';
+import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 export const uploadProfilePicture = async (profilePicture: File) => {
     console.log('profilePicture', profilePicture);
-	const url = backendServerUrl + '/upload';
+	const url = PUBLIC_BACKEND_URL + '/upload';
 	const formData = new FormData();
 	formData.append('file', profilePicture);
 	const response = await fetch(url, {
