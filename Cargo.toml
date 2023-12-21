@@ -1,0 +1,7 @@
+[workspace]
+members = ["backend", "telemetry", "telemetry-cli"]
+resolver = "2"
+
+[profile.dev.package."*"]
+debug = false
+opt-level = 3

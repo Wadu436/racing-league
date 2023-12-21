@@ -54,6 +54,3 @@ tracing-log = "0.1"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 url = "2.4"
 uuid = { version = "1.4", features = ["v4", "serde"] }
-
-[profile.dev.package.backtrace]
-opt-level = 3
