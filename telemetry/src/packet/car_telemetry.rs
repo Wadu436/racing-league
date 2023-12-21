@@ -10,8 +10,9 @@ pub enum MFDPanelIndex {
     Temperatures,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Default)]
 pub enum SurfaceType {
+    #[default]
     Tarmac,
     RumbleStrip,
     Concrete,
@@ -24,12 +25,6 @@ pub enum SurfaceType {
     Cobblestone,
     Metal,
     Ridged,
-}
-
-impl Default for SurfaceType {
-    fn default() -> Self {
-        SurfaceType::Tarmac
-    }
 }
 
 #[derive(Copy, Clone, Debug)]

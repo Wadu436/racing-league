@@ -1,5 +1,5 @@
 use bytes::{Buf, Bytes};
-use std::io::{self, Cursor, Read};
+use std::io::{Cursor, Read};
 
 use crate::packet::event::{
     Buttons, Event, EventPacket, FastestLap, Flashback, Penalty, SpeedTrap, StartLights, VehicleIdx,

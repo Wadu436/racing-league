@@ -1,5 +1,5 @@
 use bytes::{Buf, Bytes};
-use std::io;
+
 use std::io::Cursor;
 
 use crate::packet::session::{

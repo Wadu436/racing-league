@@ -20,7 +20,7 @@ pub fn parse_header(cursor: &mut Cursor<Bytes>) -> crate::Result<Header> {
     };
     let header = Header {
         format: Format::TwentyOne,
-        game_version: game_version,
+        game_version,
         packet_version,
         packet_id,
         session_uid,

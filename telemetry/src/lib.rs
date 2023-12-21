@@ -25,8 +25,6 @@ pub fn decode_packet(bytes: Bytes) -> Result<Packet> {
     match format {
         2021 => twentyone::decode_twentyone(&mut cursor),
         2022 => twentytwo::decode_twentytwo(&mut cursor),
-        _ => {
-            return Err(TelemetryError::InvalidPacket);
-        }
+        _ => Err(TelemetryError::InvalidPacket),
     }
 }

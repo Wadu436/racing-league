@@ -1,5 +1,5 @@
 use bytes::{Buf, Bytes};
-use std::io::{self, Cursor};
+use std::io::Cursor;
 
 use crate::packet::lap_data::{
     DriverStatus, LapData, LapDataPacket, PitStatus, ResultStatus, Sector,
@@ -11,9 +11,11 @@ pub fn parse_lap_data_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<LapDat
     let header = parse_header(cursor)?;
     let lap_data: Vec<LapData> = (0..22)
         .map(|_| parse_lap_data(cursor))
-        .filter(|lap_data| match lap_data.result_status {
-            ResultStatus::Invalid | ResultStatus::Inactive => false,
-            _ => true,
+        .filter(|lap_data| {
+            !matches!(
+                lap_data.result_status,
+                ResultStatus::Invalid | ResultStatus::Inactive
+            )
         })
         .collect();
 

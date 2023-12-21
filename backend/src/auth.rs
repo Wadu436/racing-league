@@ -1,3 +1,4 @@
+use chrono::TimeZone;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -22,7 +23,7 @@ fn calculate_invalidation_time(
         h.to_str().ok().and_then(|h| {
             chrono::NaiveDateTime::parse_from_str(h, "%a, %d %b %Y %H:%M:%S GMT")
                 .ok()
-                .map(|d| chrono::DateTime::<chrono::Utc>::from_utc(d, chrono::Utc))
+                .map(|d| chrono::Utc.from_utc_datetime(&d))
         })
     }) {
         return Some(expiry);

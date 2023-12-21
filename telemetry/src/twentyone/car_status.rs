@@ -1,4 +1,4 @@
-use std::io::{self, Cursor};
+use std::io::Cursor;
 
 use bytes::{Buf, Bytes};
 
@@ -53,7 +53,8 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
         11 => TyreCompound::SuperSoft,
         12 => TyreCompound::Soft,
         13 => TyreCompound::Medium,
-        14 | _ => TyreCompound::Hard,
+        14 => TyreCompound::Hard,
+        _ => TyreCompound::Hard,
     };
     let visual_tyre_compound = match cursor.get_u8() {
         7 => TyreCompound::Inter,
@@ -62,7 +63,8 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
         19 => TyreCompound::SuperSoft,
         16 | 20 => TyreCompound::Soft,
         17 | 21 => TyreCompound::Medium,
-        18 | 22 | _ => TyreCompound::Hard,
+        18 | 22 => TyreCompound::Hard,
+        _ => TyreCompound::Hard,
     };
     let tyres_age_laps = cursor.get_u8();
     let vehicle_fia_flags = parse_marshal_flag(cursor);

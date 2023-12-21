@@ -1,4 +1,4 @@
-use std::io::{self, Cursor, Read};
+use std::io::{Cursor, Read};
 
 use bytes::{Buf, Bytes};
 use serde::__private::from_utf8_lossy;
@@ -7,9 +7,7 @@ use crate::packet::participants::{ParticipantData, ParticipantsPacket, Team};
 
 use super::header::parse_header;
 
-pub fn parse_participants_packet(
-    cursor: &mut Cursor<Bytes>,
-) -> crate::Result<ParticipantsPacket> {
+pub fn parse_participants_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<ParticipantsPacket> {
     let header = parse_header(cursor)?;
 
     let num_active_cars = cursor.get_u8();

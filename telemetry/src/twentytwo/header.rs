@@ -1,5 +1,5 @@
 use bytes::{Buf, Bytes};
-use std::io::{self, Cursor};
+use std::io::Cursor;
 
 use crate::packet::header::{Format, GameVersion, Header, PacketId};
 
