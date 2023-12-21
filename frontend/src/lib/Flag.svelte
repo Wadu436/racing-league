@@ -6,6 +6,7 @@
 </script>
 
 <img
+	class="w-auto h-auto"
 	src={flagUrlFromAlpha2(alpha2, size)}
 	alt="Flag of {countryCodeAlpha2Dict[alpha2]?.countryName}"
 />

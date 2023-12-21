@@ -1,0 +1,35 @@
+fragment SessionFragment on Session {
+	id
+	sessionType
+	fastestLap {
+		id
+	}
+	event {
+		name
+		sessions {
+			id
+			sessionType
+		}
+	}
+	entries {
+		driver {
+			id
+			name
+			nationality
+		}
+		team {
+			id
+			name
+		}
+		finishPosition
+		finishStatus
+		fastestLap {
+			laptimeInMs
+		}
+		points
+		laps {
+			lapNumber
+			tyres
+		}
+	}
+}

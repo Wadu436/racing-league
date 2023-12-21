@@ -1,0 +1,5 @@
+query SessionQuery($session_id: ID!) {
+	session(sessionId: $session_id) {
+		...SessionFragment
+	}
+}
