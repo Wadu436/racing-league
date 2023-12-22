@@ -1,6 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 use super::header::Header;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct CarMotionData {
     pub world_position_x: f32,
     pub world_position_y: f32,
@@ -22,7 +24,7 @@ pub struct CarMotionData {
     pub roll: f32,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MotionPacket {
     pub header: Header,
 

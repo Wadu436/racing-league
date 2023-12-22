@@ -6,12 +6,14 @@ pub enum Format {
     TwentyOne,
     #[serde(rename = "F1 2022")]
     TwentyTwo,
+    #[serde(rename = "F1 2023")]
+    TwentyThree,
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct GameVersion(pub u8, pub u8);
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum PacketId {
     Motion,
     Session,
@@ -27,7 +29,7 @@ pub enum PacketId {
     SessionHistory,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Header {
     pub format: Format,
     pub game_version: GameVersion,

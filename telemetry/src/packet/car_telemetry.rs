@@ -1,6 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 use super::header::Header;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum MFDPanelIndex {
     Closed,
     CarSetup,
@@ -10,7 +12,7 @@ pub enum MFDPanelIndex {
     Temperatures,
 }
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, Serialize, Deserialize)]
 pub enum SurfaceType {
     #[default]
     Tarmac,
@@ -27,7 +29,7 @@ pub enum SurfaceType {
     Ridged,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct CarTelemetryData {
     pub speed: u16,
     pub throttle: f32,
@@ -47,7 +49,7 @@ pub struct CarTelemetryData {
     pub surface_type: [SurfaceType; 4],
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CarTelemetryPacket {
     pub header: Header,
 

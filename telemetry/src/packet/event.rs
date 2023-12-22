@@ -1,17 +1,19 @@
+use serde::{Serialize, Deserialize};
+
 use super::header::Header;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct FastestLap {
     pub vehicle_idx: u8,
     pub lap_time: f32,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct VehicleIdx {
     pub vehicle_idx: u8,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Penalty {
     pub penalty_type: u8,
     pub infringement_type: u8,
@@ -22,7 +24,7 @@ pub struct Penalty {
     pub places_gained: u8,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct SpeedTrap {
     pub vehicle_idx: u8,
     pub speed: f32,
@@ -32,23 +34,23 @@ pub struct SpeedTrap {
     pub fastest_speed_in_session: Option<f32>,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct StartLights {
     pub num_lights: u8,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Flashback {
     pub flashback_frame_identifier: u32,
     pub flashback_session_time: f32,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Buttons {
     pub button_status: u32,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum Event {
     SessionStarted,
     SessionEnded,
@@ -70,7 +72,7 @@ pub enum Event {
     Unknown,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct EventPacket {
     pub header: Header,
     pub event: Event,

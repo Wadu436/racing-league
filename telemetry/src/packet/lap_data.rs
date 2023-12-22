@@ -1,20 +1,22 @@
+use serde::{Serialize, Deserialize};
+
 use super::header::Header;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum PitStatus {
     None,
     Pitting,
     InPitArea,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum Sector {
     Sector1,
     Sector2,
     Sector3,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum DriverStatus {
     InGarage,
     FlyingLap,
@@ -23,7 +25,7 @@ pub enum DriverStatus {
     OnTrack,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum ResultStatus {
     Invalid,
     Inactive,
@@ -35,7 +37,7 @@ pub enum ResultStatus {
     Retired,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct LapData {
     pub last_lap_time_in_ms: u32,
     pub current_lap_time_in_ms: u32,
@@ -63,7 +65,7 @@ pub struct LapData {
     pub pit_stop_should_serve_pen: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LapDataPacket {
     pub header: Header,
     pub lap_data: Vec<LapData>,

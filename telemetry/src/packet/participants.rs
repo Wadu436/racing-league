@@ -44,7 +44,7 @@ pub enum Team {
     CustomTeam,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ParticipantData {
     pub ai_controlled: bool,
     pub driver_id: u8,
@@ -57,7 +57,7 @@ pub struct ParticipantData {
     pub your_telemetry: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ParticipantsPacket {
     pub header: Header,
     pub num_active_cars: u8,

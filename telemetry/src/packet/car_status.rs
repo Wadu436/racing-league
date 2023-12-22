@@ -10,7 +10,7 @@ pub enum TractionControl {
     Full,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum FuelMix {
     Lean,
     Standard,
@@ -45,7 +45,7 @@ pub enum ERSDeployMode {
     Overtake,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct CarStatusData {
     pub traction_control: TractionControl,
     pub anti_lock_brakes: bool,
@@ -72,7 +72,7 @@ pub struct CarStatusData {
     pub network_paused: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CarStatusPacket {
     pub header: Header,
 

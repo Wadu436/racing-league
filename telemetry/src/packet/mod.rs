@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
@@ -7,7 +9,7 @@ pub mod motion;
 pub mod participants;
 pub mod session;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum Packet {
     Motion(motion::MotionPacket),
     Session(session::SessionPacket),

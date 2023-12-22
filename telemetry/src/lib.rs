@@ -7,6 +7,8 @@ use self::packet::Packet;
 pub mod packet;
 mod twentyone;
 mod twentytwo;
+mod twentythree;
+
 #[derive(thiserror::Error, Debug)]
 pub enum TelemetryError {
     #[error("invalid packet")]
@@ -25,6 +27,7 @@ pub fn decode_packet(bytes: Bytes) -> Result<Packet> {
     match format {
         2021 => twentyone::decode_twentyone(&mut cursor),
         2022 => twentytwo::decode_twentytwo(&mut cursor),
+        2023 => twentythree::decode_twentythree(&mut cursor),
         _ => Err(TelemetryError::InvalidPacket),
     }
 }

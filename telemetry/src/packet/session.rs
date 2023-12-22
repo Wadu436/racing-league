@@ -123,7 +123,7 @@ pub enum Formula {
     F2_2021,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum SafetyCarStatus {
     No,
     Full,
@@ -131,13 +131,13 @@ pub enum SafetyCarStatus {
     Formation,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum ForecastAccuracy {
     Perfect,
     Approximate,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum BrakingAssist {
     Off,
     Low,
@@ -155,20 +155,20 @@ pub enum GearboxAssist {
     Unknown,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum DynamicRacingLine {
     Off,
     Corners,
     Full,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum DynamicRacingLineType {
     TwoD,
     ThreeD,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum MarshalFlag {
     Unknown,
     None,
@@ -178,13 +178,13 @@ pub enum MarshalFlag {
     Red,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct MarshalZone {
     pub zone_start: f32,
     pub zone_flag: MarshalFlag,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct WeatherForecastSample {
     pub session_type: SessionType,
     pub time_offset: u8,
@@ -225,7 +225,7 @@ pub enum GameMode {
     Benchmark,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum Ruleset {
     PracticeAndQualifying,
     Race,
@@ -238,7 +238,7 @@ pub enum Ruleset {
     RivalDuel,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum SessionLength {
     None,
     VeryShort,
@@ -249,7 +249,7 @@ pub enum SessionLength {
     Full,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SessionPacket {
     pub header: Header,
     pub weather: Weather,
