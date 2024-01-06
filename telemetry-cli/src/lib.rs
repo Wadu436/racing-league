@@ -8,6 +8,8 @@ use std::{
 use bytes::{Buf, Bytes};
 use serde::{Deserialize, Serialize};
 use telemetry::{decode_packet, packet::Packet};
+use tracing::{debug, level_filters::LevelFilter, warn, Level};
+use tracing_subscriber::FmtSubscriber;
 
 // A packet that can be/was written to disk
 #[derive(Debug, Serialize, Deserialize)]
@@ -16,21 +18,55 @@ struct DiskPacket {
     packet: Packet,
 }
 
-pub fn record<P: AsRef<Path>>(file: P) -> eyre::Result<()> {
+pub fn initialize(level: impl Into<LevelFilter>) -> eyre::Result<()> {
+    color_eyre::install()?;
+
+    let subscriber = FmtSubscriber::builder().with_max_level(level).finish();
+    tracing::subscriber::set_global_default(subscriber)?;
+
+    Ok(())
+}
+
+pub fn record<P: AsRef<Path>>(file_path: P, address: &str) -> eyre::Result<()> {
     // open file
-    println!("Recording to {:?}", file.as_ref());
-    let mut file = std::fs::File::create(file)?;
-    let socket = UdpSocket::bind("0.0.0.0:20777")?;
-    let mut buf = [0; 1464];
+    let socket = UdpSocket::bind(address)?;
+    debug!(address, "Opened socket");
+
+    let mut file = std::fs::File::create(file_path.as_ref())?;
+    debug!(
+        path = file_path.as_ref().to_string_lossy().as_ref(),
+        "Opened file"
+    );
+
+    let mut buf = [0; 2048]; // needs to be at least 1464, but we'll go for a nice, round, power of 2 instead
 
     let start_time = Instant::now();
 
+    println!(
+        "Listening on {}\nRecording to {}",
+        address,
+        file_path.as_ref().to_string_lossy()
+    );
+
     while let Ok((size, _)) = socket.recv_from(&mut buf) {
-        println!("Packet of size: {}", size);
         let b = Bytes::copy_from_slice(&buf[..size]);
         // let b = Bytes::copy_from_slice(&buf);
-        let packet = decode_packet(b.clone())?;
-        println!("Packet: {:?}", packet);
+        let packet = decode_packet(b.clone());
+        match packet {
+            Ok(packet) => {
+                debug!(
+                    size,
+                    packet_id = packet.header().packet_id.to_string(),
+                    "Received packet"
+                );
+            }
+            Err(e) => {
+                warn!(
+                    "Could not parse packet. (packet will still be saved to disk): {}",
+                    e
+                );
+            }
+        }
         file.write_all(&(size as u64).to_be_bytes())?;
         file.write_all(&(Instant::now() - start_time).as_secs_f64().to_be_bytes())?;
         file.write_all(&b)?;

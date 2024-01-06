@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 bytes = "1.5.0"
 celes = "2.4.0"
+derive_more = "0.99.17"
 serde = { version = "1.0.193", features = ["derive"] }
 thiserror = "1.0.51"

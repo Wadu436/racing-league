@@ -1,3 +1,4 @@
+use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
@@ -13,7 +14,7 @@ pub enum Format {
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct GameVersion(pub u8, pub u8);
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Display, Serialize, Deserialize)]
 pub enum PacketId {
     Motion,
     Session,
