@@ -166,3 +166,38 @@ fn parse_participants_data(cursor: &mut Cursor<Bytes>) -> ParticipantData {
         your_telemetry,
     }
 }
+
+pub fn parse_team(cursor: &mut Cursor<Bytes>) -> Team {
+    match cursor.get_u8() {
+        0 | 85 => Team::Mercedes,
+        1 | 86 => Team::Ferrari,
+        2 | 87 => Team::RedBullRacing,
+        3 | 88 => Team::Williams,
+        4 => Team::AstonMartin,
+        5 => Team::Alpine,
+        6 | 91 => Team::AlphaTauri,
+        7 | 92 => Team::Haas,
+        8 | 93 => Team::McLaren,
+        9 | 94 => Team::AlfaRomeo,
+
+        106 => Team::Prema,
+        107 => Team::UniVirtuosi,
+        108 => Team::Carlin,
+        109 => Team::Hitech,
+        110 => Team::ArtGP,
+        111 => Team::MPMotorsport,
+        112 => Team::Charouz,
+        113 => Team::Dams,
+        114 => Team::Campos,
+        115 => Team::BWT,
+        116 => Team::Trident,
+
+        95..=96 | 98..=101 | 103 | 117 => Team::Supercar,
+        97 | 102 => Team::SafetyCar,
+        104 => Team::CustomTeam,
+
+        89 => Team::RacingPoint,
+        90 => Team::Renault,
+        _ => Team::Unknown,
+    }
+}

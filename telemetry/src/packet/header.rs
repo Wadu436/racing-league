@@ -14,7 +14,7 @@ pub enum Format {
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct GameVersion(pub u8, pub u8);
 
-#[derive(Copy, Clone, Debug, Display, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Display, Serialize, Deserialize, PartialEq, Eq)]
 pub enum PacketId {
     Motion,
     Session,

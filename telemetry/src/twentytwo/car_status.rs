@@ -41,21 +41,7 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
     let max_gears = cursor.get_u8();
     let drs_allowed = cursor.get_u8();
     let drs_activation_distance = cursor.get_u16_le();
-    let actual_tyre_compound = match cursor.get_u8() {
-        16 => TyreCompound::C5,
-        17 => TyreCompound::C4,
-        18 => TyreCompound::C3,
-        19 => TyreCompound::C2,
-        20 => TyreCompound::C1,
-        7 => TyreCompound::Inter,
-        8 | 10 | 15 => TyreCompound::Wet,
-        9 => TyreCompound::Dry,
-        11 => TyreCompound::SuperSoft,
-        12 => TyreCompound::Soft,
-        13 => TyreCompound::Medium,
-        14 => TyreCompound::Hard,
-        _ => TyreCompound::Hard,
-    };
+    let actual_tyre_compound = parse_tyre_compound(cursor.get_u8());
     let visual_tyre_compound = match cursor.get_u8() {
         7 => TyreCompound::Inter,
         8 | 10 | 15 => TyreCompound::Wet,
@@ -104,5 +90,23 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
         ers_harvested_this_lap_mguh,
         ers_deployed_this_lap,
         network_paused,
+    }
+}
+
+pub fn parse_tyre_compound(compound: u8) -> TyreCompound {
+    match compound {
+        16 => TyreCompound::C5,
+        17 => TyreCompound::C4,
+        18 => TyreCompound::C3,
+        19 => TyreCompound::C2,
+        20 => TyreCompound::C1,
+        7 => TyreCompound::Inter,
+        8 | 10 | 15 => TyreCompound::Wet,
+        9 => TyreCompound::Dry,
+        11 => TyreCompound::SuperSoft,
+        12 => TyreCompound::Soft,
+        13 => TyreCompound::Medium,
+        14 => TyreCompound::Hard,
+        _ => TyreCompound::Hard,
     }
 }

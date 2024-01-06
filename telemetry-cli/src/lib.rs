@@ -7,8 +7,11 @@ use std::{
 
 use bytes::{Buf, Bytes};
 use serde::{Deserialize, Serialize};
-use telemetry::{decode_packet, packet::Packet};
-use tracing::{debug, level_filters::LevelFilter, warn, Level};
+use telemetry::{
+    decode_packet,
+    packet::{header::PacketId, Packet},
+};
+use tracing::{debug, level_filters::LevelFilter, warn};
 use tracing_subscriber::FmtSubscriber;
 
 // A packet that can be/was written to disk
@@ -76,7 +79,11 @@ pub fn record<P: AsRef<Path>>(file_path: P, address: &str) -> eyre::Result<()> {
     Ok(())
 }
 
-pub fn parse<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> {
+pub fn parse<P: AsRef<Path>>(
+    file: P,
+    out: Option<P>,
+    filter: Option<Vec<PacketId>>,
+) -> Result<(), eyre::Error> {
     let mut file = std::fs::File::open(file)?;
     let metadata = file.metadata()?;
     let mut buf = vec![0_u8; metadata.len() as usize];
@@ -90,6 +97,39 @@ pub fn parse<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error>
         let packet_bytes = bytes.copy_to_bytes(size);
         let packet = decode_packet(packet_bytes)?;
 
+        if let Some(filter) = &filter {
+            if !filter.contains(&packet.header().packet_id) {
+                continue;
+            }
+        }
+
+        packets.push(DiskPacket { time, packet });
+    }
+
+    let packets_json = serde_json::to_string_pretty(&packets)?;
+
+    if let Some(out) = out {
+        std::fs::write(&out, packets_json)?;
+        println!("Wrote packets to {:?}", out.as_ref());
+    } else {
+        println!("{}", packets_json);
+    }
+    Ok(())
+}
+
+pub fn finish<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> {
+    let mut file = std::fs::File::open(file)?;
+    let metadata = file.metadata()?;
+    let mut buf = vec![0_u8; metadata.len() as usize];
+    let mut packets: Vec<DiskPacket> = Vec::new();
+    file.read_exact(&mut buf)?;
+    let mut bytes = Bytes::copy_from_slice(&buf);
+    while bytes.has_remaining() {
+        let size = bytes.get_u64() as usize;
+        let time = bytes.get_f64();
+        let time = Duration::from_secs_f64(time);
+        let packet_bytes = bytes.copy_to_bytes(size);
+        let packet = decode_packet(packet_bytes)?;
         packets.push(DiskPacket { time, packet });
     }
 

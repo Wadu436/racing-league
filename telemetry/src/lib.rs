@@ -5,7 +5,6 @@ use bytes::{Buf, Bytes};
 use self::packet::Packet;
 
 pub mod packet;
-mod twentyone;
 mod twentytwo;
 mod twentythree;
 
@@ -25,7 +24,6 @@ pub fn decode_packet(bytes: Bytes) -> Result<Packet> {
     let format = cursor.get_u16_le();
 
     match format {
-        2021 => twentyone::decode_twentyone(&mut cursor),
         2022 => twentytwo::decode_twentytwo(&mut cursor),
         2023 => twentythree::decode_twentythree(&mut cursor),
         _ => Err(TelemetryError::InvalidPacket),

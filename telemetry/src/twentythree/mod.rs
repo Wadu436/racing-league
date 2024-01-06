@@ -12,6 +12,7 @@ mod lap_data;
 mod motion;
 mod participants;
 mod session;
+mod lobby_info;
 
 pub fn decode_twentythree(cursor: &mut Cursor<Bytes>) -> crate::Result<Packet> {
     cursor.set_position(5);
@@ -31,9 +32,9 @@ pub fn decode_twentythree(cursor: &mut Cursor<Bytes>) -> crate::Result<Packet> {
         )?)),
         PacketId::CarStatus => Ok(Packet::CarStatus(car_status::parse_car_status(cursor)?)),
         PacketId::FinalClassification => {
-            Ok(Packet::FinalClassification(header::parse_header(cursor)?))
+            Ok(Packet::FinalClassification(todo!()))
         }
-        PacketId::LobbyInfo => Ok(Packet::LobbyInfo(header::parse_header(cursor)?)),
+        PacketId::LobbyInfo => Ok(Packet::LobbyInfo(lobby_info::parse_lobby_info(cursor)?)),
         PacketId::CarDamage => Ok(Packet::CarDamage(header::parse_header(cursor)?)),
         PacketId::SessionHistory => Ok(Packet::SessionHistory(header::parse_header(cursor)?)),
     }
