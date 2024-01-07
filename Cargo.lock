@@ -3250,9 +3250,11 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bytes",
+ "celes",
  "clap",
  "color-eyre",
  "eyre",
+ "itertools",
  "serde",
  "serde_json",
  "telemetry",

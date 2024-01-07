@@ -7,12 +7,14 @@ use super::packet::{header::PacketId, Packet};
 mod car_status;
 mod car_telemetry;
 mod event;
+mod final_classification;
 mod header;
 mod lap_data;
+mod lobby_info;
 mod motion;
 mod participants;
 mod session;
-mod lobby_info;
+mod session_history;
 
 pub fn decode_twentythree(cursor: &mut Cursor<Bytes>) -> crate::Result<Packet> {
     cursor.set_position(5);
@@ -31,11 +33,13 @@ pub fn decode_twentythree(cursor: &mut Cursor<Bytes>) -> crate::Result<Packet> {
             cursor,
         )?)),
         PacketId::CarStatus => Ok(Packet::CarStatus(car_status::parse_car_status(cursor)?)),
-        PacketId::FinalClassification => {
-            Ok(Packet::FinalClassification(todo!()))
-        }
+        PacketId::FinalClassification => Ok(Packet::FinalClassification(
+            final_classification::parse_final_classification_packet(cursor)?,
+        )),
         PacketId::LobbyInfo => Ok(Packet::LobbyInfo(lobby_info::parse_lobby_info(cursor)?)),
         PacketId::CarDamage => Ok(Packet::CarDamage(header::parse_header(cursor)?)),
-        PacketId::SessionHistory => Ok(Packet::SessionHistory(header::parse_header(cursor)?)),
+        PacketId::SessionHistory => Ok(Packet::SessionHistory(
+            session_history::parse_session_history_packet(cursor)?,
+        )),
     }
 }

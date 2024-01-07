@@ -11,12 +11,6 @@ pub fn parse_lap_data_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<LapDat
     let header = parse_header(cursor)?;
     let lap_data: Vec<LapData> = (0..22)
         .map(|_| parse_lap_data(cursor))
-        .filter(|lap_data| {
-            !matches!(
-                lap_data.result_status,
-                ResultStatus::Invalid | ResultStatus::Inactive
-            )
-        })
         .collect();
 
     let time_trial_pb_car_idx = Some(cursor.get_u8());
@@ -64,16 +58,7 @@ pub fn parse_lap_data(cursor: &mut Cursor<Bytes>) -> LapData {
         4 => DriverStatus::OnTrack,
         _ => DriverStatus::InGarage,
     };
-    let result_status = match cursor.get_u8() {
-        1 => ResultStatus::Inactive,
-        2 => ResultStatus::Active,
-        3 => ResultStatus::Finished,
-        4 => ResultStatus::DidNotFinish,
-        5 => ResultStatus::Disqualified,
-        6 => ResultStatus::NotClassified,
-        7 => ResultStatus::Retired,
-        _ => ResultStatus::Invalid,
-    };
+    let result_status = parse_result_data(cursor);
     let pit_lane_timer_active = cursor.get_u8() != 0;
     let pit_lane_time_in_lane_in_ms = cursor.get_u16_le();
     let pit_stop_timer_in_ms = cursor.get_u16_le();
@@ -104,5 +89,18 @@ pub fn parse_lap_data(cursor: &mut Cursor<Bytes>) -> LapData {
         pit_lane_time_in_lane_in_ms,
         pit_stop_timer_in_ms,
         pit_stop_should_serve_pen,
+    }
+}
+
+pub fn parse_result_data(cursor: &mut Cursor<Bytes>) -> ResultStatus {
+    match cursor.get_u8() {
+        1 => ResultStatus::Inactive,
+        2 => ResultStatus::Active,
+        3 => ResultStatus::Finished,
+        4 => ResultStatus::DidNotFinish,
+        5 => ResultStatus::Disqualified,
+        6 => ResultStatus::NotClassified,
+        7 => ResultStatus::Retired,
+        _ => ResultStatus::Invalid,
     }
 }

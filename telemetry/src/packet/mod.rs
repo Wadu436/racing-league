@@ -1,15 +1,16 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
+pub mod final_classification;
 pub mod header;
 pub mod lap_data;
 pub mod motion;
 pub mod participants;
-pub mod session;
 pub mod lobby_info;
-pub mod final_classification;
+pub mod session;
+pub mod session_history;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum Packet {
@@ -24,7 +25,7 @@ pub enum Packet {
     FinalClassification(final_classification::FinalClassificationPacket),
     LobbyInfo(lobby_info::LobbyInfoPacket),
     CarDamage(header::Header),
-    SessionHistory(header::Header),
+    SessionHistory(session_history::SessionHistoryPacket),
 }
 
 impl Packet {
@@ -41,7 +42,7 @@ impl Packet {
             Packet::FinalClassification(p) => p.header,
             Packet::LobbyInfo(p) => p.header,
             Packet::CarDamage(p) => *p,
-            Packet::SessionHistory(p) => *p,
+            Packet::SessionHistory(p) => p.header,
         }
     }
 }

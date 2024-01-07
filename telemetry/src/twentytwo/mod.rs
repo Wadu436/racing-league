@@ -14,6 +14,7 @@ mod participants;
 mod session;
 mod lobby_info;
 mod final_classification;
+mod session_history;
 
 pub fn decode_twentytwo(cursor: &mut Cursor<Bytes>) -> crate::Result<Packet> {
     cursor.set_position(5);
@@ -37,6 +38,6 @@ pub fn decode_twentytwo(cursor: &mut Cursor<Bytes>) -> crate::Result<Packet> {
         }
         PacketId::LobbyInfo => Ok(Packet::LobbyInfo(lobby_info::parse_lobby_info(cursor)?)),
         PacketId::CarDamage => Ok(Packet::CarDamage(header::parse_header(cursor)?)),
-        PacketId::SessionHistory => Ok(Packet::SessionHistory(header::parse_header(cursor)?)),
+        PacketId::SessionHistory => Ok(Packet::SessionHistory(session_history::parse_session_history_packet(cursor)?)),
     }
 }
