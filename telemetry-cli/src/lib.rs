@@ -60,6 +60,8 @@ struct RaceLap {
     sector_3_time_in_ms: u16,
     lap_valid: bool,
     position: u8, // Position at the end of the lap
+    safety_car: bool,
+    virtual_safety_car: bool,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -216,6 +218,8 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
             sector_1_time_in_ms: u16,
             sector_2_time_in_ms: u16,
             lap_valid: bool,
+            safety_car: bool,
+            virtual_safety_car: bool,
         }
 
         let mut laps: [Vec<RaceLap>; 22] = Default::default();
@@ -224,6 +228,8 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
             sector_1_time_in_ms: 0,
             sector_2_time_in_ms: 0,
             lap_valid: true,
+            safety_car: false,
+            virtual_safety_car: false,
         }; 22];
 
         packets
@@ -250,13 +256,18 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
                             as u16,
                         lap_valid: current_lap_data[idx].lap_valid,
                         position: lap_data.car_position,
+                        safety_car: current_lap_data[idx].safety_car,
+                        virtual_safety_car: current_lap_data[idx].virtual_safety_car,
                     });
                 }
+                // TODO: handle SC/VSC
                 current_lap_data[idx] = TempLap {
                     lap_number: lap_data.current_lap_num,
                     sector_1_time_in_ms: lap_data.sector1_time_in_ms,
                     sector_2_time_in_ms: lap_data.sector2_time_in_ms,
                     lap_valid: !lap_data.current_lap_invalid,
+                    safety_car: false,
+                    virtual_safety_car: false,
                 };
             });
 
