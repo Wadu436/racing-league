@@ -49,62 +49,39 @@ pub enum SessionType {
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum Track {
     Unknown,
-    #[serde(rename = "Australia")]
     Melbourne,
-    #[serde(rename = "France")]
     PaulRicard,
-    #[serde(rename = "China")]
     Shanghai,
-    #[serde(rename = "Bahrain")]
     Sakhir,
-    #[serde(rename = "Spain")]
     Catalunya,
     Monaco,
-    #[serde(rename = "Canada")]
     Montreal,
-    #[serde(rename = "Great Britain")]
     Silverstone,
-    #[serde(rename = "Germany")]
     Hockenheim,
-    #[serde(rename = "Hungary")]
     Hungaroring,
-    #[serde(rename = "Belgium")]
     Spa,
-    #[serde(rename = "Italy (Monza)")]
     Monza,
     Singapore,
-    #[serde(rename = "Japan")]
     Suzuka,
-    #[serde(rename = "Abu Dhabi")]
     AbuDhabi,
-    #[serde(rename = "Las Vegas")]
     Texas,
     Brazil,
     Austria,
-    #[serde(rename = "Russia")]
     Sochi,
     Mexico,
-    #[serde(rename = "Azerbaijan")]
     Baku,
-    #[serde(rename = "Bahrain Short")]
     SakhirShort,
-    #[serde(rename = "Great Britain Short")]
     SilverstoneShort,
-    #[serde(rename = "Las Vegas Short")]
     TexasShort,
-    #[serde(rename = "Japan Short")]
     SuzukaShort,
-    #[serde(rename = "Vietnam")]
     Hanoi,
-    #[serde(rename = "Netherlands")]
     Zandvoort,
-    #[serde(rename = "Italy (Imola)")]
     Imola,
-    #[serde(rename = "Portugal")]
     Portimao,
-    #[serde(rename = "Saudi Arabia")]
     Jeddah,
     Miami,
+    Vegas,
+    Losail,
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
@@ -175,7 +152,6 @@ pub enum MarshalFlag {
     Green,
     Blue,
     Yellow,
-    Red,
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
@@ -185,23 +161,33 @@ pub struct MarshalZone {
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum TempChange {
+    Decrease,
+    NoChange,
+    Increase,
+}
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct WeatherForecastSample {
     pub session_type: SessionType,
     pub time_offset: u8,
     pub weather: Weather,
     pub track_temperature: i8,
-    pub track_temperature_change: i8,
+    pub track_temperature_change: TempChange,
     pub air_temperature: i8,
-    pub air_temperature_change: i8,
+    pub air_temperature_change: TempChange,
     pub rain_percentage: u8,
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum GameMode {
+    Unknown,
     #[serde(rename = "Event Mode")]
     EventMode,
     #[serde(rename = "Grand Prix")]
     GrandPrix,
+    #[serde(rename = "Grand Prix (23)")]
+    GrandPrix23,
     #[serde(rename = "Time Trial")]
     TimeTrial,
     Splitscreen,
@@ -218,15 +204,21 @@ pub enum GameMode {
     OnlineChampionship,
     #[serde(rename = "Online Weekly Event")]
     OnlineWeeklyEvent,
+    StoryMode,
     #[serde(rename = "Career (2022)")]
     Career22,
-    #[serde(rename = "Two Player Career (2022)")]
+    #[serde(rename = "Career Online (2022)")]
     Career22Online,
+    #[serde(rename = "Career (23)")]
+    Career23,
+    #[serde(rename = "Career Online (23)")]
+    Career23Online,
     Benchmark,
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum Ruleset {
+    Unknown,
     PracticeAndQualifying,
     Race,
     TimeTrial,
@@ -247,6 +239,18 @@ pub enum SessionLength {
     MediumLong,
     Long,
     Full,
+}
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum SpeedUnit {
+    Kmh,
+    Mph,
+}
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum TempUnit {
+    Celsius,
+    Fahrenheit,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -288,8 +292,15 @@ pub struct SessionPacket {
     pub drs_assist: bool,
     pub dynamic_racing_line: DynamicRacingLine,
     pub dynamic_racing_line_type: DynamicRacingLineType,
-    pub game_mode: Option<GameMode>,
-    pub ruleset: Option<Ruleset>,
-    pub time_of_day: Option<u32>,
-    pub session_length: Option<SessionLength>,
+    pub game_mode: GameMode,
+    pub ruleset: Ruleset,
+    pub time_of_day: u32,
+    pub session_length: SessionLength,
+    pub speed_units_lead_player: SpeedUnit,
+    pub temperature_units_lead_player: TempUnit,
+    pub speed_units_secondary_player: SpeedUnit,
+    pub temperature_units_secondary_player: TempUnit,
+    pub num_safety_car_periods: u8,
+    pub num_virtual_safety_car_periods: u8,
+    pub num_red_flag_periods: u8,
 }

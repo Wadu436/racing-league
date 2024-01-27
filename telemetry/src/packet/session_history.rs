@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use serde::{Deserialize, Serialize};
 
 use super::{car_status::TyreCompound, header::Header};
@@ -5,9 +7,9 @@ use super::{car_status::TyreCompound, header::Header};
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct LapHistoryData {
     pub lap_time_in_ms: u32,
-    pub sector1_time_in_ms: u16,
-    pub sector2_time_in_ms: u16,
-    pub sector3_time_in_ms: u16,
+    pub sector_1_time: Duration,
+    pub sector_2_time: Duration,
+    pub sector_3_time: Duration,
     pub lap_valid: bool,
     pub sector_1_valid: bool,
     pub sector_2_valid: bool,

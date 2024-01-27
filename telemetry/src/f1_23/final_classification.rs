@@ -1,18 +1,24 @@
-use std::io::Cursor;
+use std::{io::Cursor, time::Duration};
 
 use bytes::{Buf, Bytes};
 
 use crate::{
     packet::final_classification::{FinalClassificationData, FinalClassificationPacket, TyreStint},
-    twentytwo::{car_status::parse_tyre_compound, lap_data::parse_result_data},
     Result,
 };
 
-use super::header::parse_header;
+
+use super::{header::parse_header, lap_data::parse_result_data, car_status::parse_tyre_compound};
 
 pub fn parse_final_classification_packet(
     cursor: &mut Cursor<Bytes>,
 ) -> Result<FinalClassificationPacket> {
+    if cursor.remaining() != 1020 {
+        return Err(crate::TelemetryError::InvalidPacket(
+            "invalid final classification packet length".to_owned(),
+        ));
+    }
+
     let header = parse_header(cursor)?;
     let num_cars = cursor.get_u8();
     let classification_data = (0..num_cars)
@@ -32,8 +38,8 @@ fn parse_final_classification_data(cursor: &mut Cursor<Bytes>) -> Result<FinalCl
     let points = cursor.get_u8();
     let num_pit_stops = cursor.get_u8();
     let status = parse_result_data(cursor);
-    let best_laptime_in_ms = cursor.get_u32_le();
-    let total_race_time_without_penalties_in_seconds = cursor.get_f64_le();
+    let best_laptime = Duration::from_millis(cursor.get_u32_le() as _);
+    let total_race_time_without_penalties = Duration::from_secs_f64(cursor.get_f64_le());
     let penalty_time_in_seconds = cursor.get_u8();
     let num_penalties = cursor.get_u8();
     let num_tyre_stints = cursor.get_u8();
@@ -58,8 +64,8 @@ fn parse_final_classification_data(cursor: &mut Cursor<Bytes>) -> Result<FinalCl
         points,
         num_pit_stops,
         status,
-        best_laptime_in_ms,
-        total_race_time_without_penalties_in_seconds,
+        best_laptime,
+        total_race_time_without_penalties,
         penalty_time_in_seconds,
         num_penalties,
         tyre_stints,

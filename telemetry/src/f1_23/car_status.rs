@@ -9,6 +9,11 @@ use crate::packet::car_status::{
 use super::{header::parse_header, session::parse_marshal_flag};
 
 pub fn parse_car_status(cursor: &mut Cursor<Bytes>) -> crate::Result<CarStatusPacket> {
+    if cursor.remaining() != 1239 {
+        return Err(crate::TelemetryError::InvalidPacket(
+            "invalid car status packet length".to_owned(),
+        ));
+    }
     let header = parse_header(cursor)?;
     let car_status_data: Vec<_> = (0..22).map(|_| parse_car_status_data(cursor)).collect();
 
@@ -54,6 +59,9 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
     };
     let tyres_age_laps = cursor.get_u8();
     let vehicle_fia_flags = parse_marshal_flag(cursor);
+    let engine_power_ice = cursor.get_f32_le();
+    let engine_power_mguk = cursor.get_f32_le();
+
     let ers_store_energy = cursor.get_f32_le();
     let ers_deploy_mode = match cursor.get_u8() {
         1 => ERSDeployMode::Medium,
@@ -90,6 +98,8 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
         ers_harvested_this_lap_mguh,
         ers_deployed_this_lap,
         network_paused,
+        engine_power_ice,
+        engine_power_mguk,
     }
 }
 
@@ -100,6 +110,7 @@ pub fn parse_tyre_compound(compound: u8) -> TyreCompound {
         18 => TyreCompound::C3,
         19 => TyreCompound::C2,
         20 => TyreCompound::C1,
+        21 => TyreCompound::C0,
         7 => TyreCompound::Inter,
         8 | 10 | 15 => TyreCompound::Wet,
         9 => TyreCompound::Dry,

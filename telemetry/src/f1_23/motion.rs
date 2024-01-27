@@ -5,6 +5,12 @@ use std::io::Cursor;
 use super::header::parse_header;
 
 pub fn parse_motion_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<MotionPacket> {
+    if cursor.remaining() != 1349 {
+        return Err(crate::TelemetryError::InvalidPacket(
+            "invalid motion packet length".to_owned(),
+        ));
+    }
+
     let header = parse_header(cursor)?;
 
     let car_motion_data = (0..22).map(|_| parse_car_motion_data(cursor)).collect();
@@ -42,9 +48,9 @@ fn parse_car_motion_data(cursor: &mut Cursor<Bytes>) -> CarMotionData {
         world_velocity_x,
         world_velocity_y,
         world_velocity_z,
-        world_forward_fir_x,
-        world_forward_fir_y,
-        world_forward_fir_z,
+        world_forward_dir_x: world_forward_fir_x,
+        world_forward_dir_y: world_forward_fir_y,
+        world_forward_dir_z: world_forward_fir_z,
         world_right_dir_x,
         world_right_dir_y,
         world_right_dir_z,

@@ -9,6 +9,12 @@ use crate::packet::car_telemetry::{
 use super::header::parse_header;
 
 pub fn parse_car_telemetry(cursor: &mut Cursor<Bytes>) -> crate::Result<CarTelemetryPacket> {
+    if cursor.remaining() != 1352 {
+        return Err(crate::TelemetryError::InvalidPacket(
+            "invalid car telemetry packet length".to_owned(),
+        ));
+    }
+
     let header = parse_header(cursor)?;
 
     let car_telemetry_data: Vec<_> = (0..22).map(|_| parse_car_telemetry_data(cursor)).collect();

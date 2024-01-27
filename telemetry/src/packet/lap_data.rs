@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use serde::{Serialize, Deserialize};
 
 use super::header::Header;
@@ -25,7 +27,7 @@ pub enum DriverStatus {
     OnTrack,
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ResultStatus {
     Invalid,
     Inactive,
@@ -39,10 +41,12 @@ pub enum ResultStatus {
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct LapData {
-    pub last_lap_time_in_ms: u32,
-    pub current_lap_time_in_ms: u32,
-    pub sector1_time_in_ms: u16,
-    pub sector2_time_in_ms: u16,
+    pub last_lap_time: Duration,
+    pub current_lap_time: Duration,
+    pub sector_1_time: Duration,
+    pub sector_2_time: Duration,
+    pub delta_to_car_in_front: Duration,
+    pub delta_to_race_leader: Duration,
     pub lap_distance: f32,
     pub total_distance: f32,
     pub safety_car_delta: f32,
@@ -54,21 +58,22 @@ pub struct LapData {
     pub current_lap_invalid: bool,
     pub penalties: u8,
     pub warnings: u8,
+    pub corner_cutting_warnings: u8,
     pub num_unserved_drive_through_pens: u8,
     pub num_unserved_stop_go_pens: u8,
     pub grid_position: u8,
     pub driver_status: DriverStatus,
     pub result_status: ResultStatus,
     pub pit_lane_timer_active: bool,
-    pub pit_lane_time_in_lane_in_ms: u16,
-    pub pit_stop_timer_in_ms: u16,
+    pub pit_lane_time_in_lane: Duration,
+    pub pit_stop_timer: Duration,
     pub pit_stop_should_serve_pen: bool,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LapDataPacket {
     pub header: Header,
-    pub lap_data: Vec<LapData>,
+    pub lap_data: Vec<Option<LapData>>,
     pub time_trial_pb_car_idx: Option<u8>,
     pub time_trial_rival_car_idx: Option<u8>,
 }

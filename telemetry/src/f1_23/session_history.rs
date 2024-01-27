@@ -1,4 +1,4 @@
-use std::io::Cursor;
+use std::{io::Cursor, time::Duration};
 
 use bytes::{Buf, Bytes};
 
@@ -10,7 +10,7 @@ pub fn parse_session_history_packet(
     cursor: &mut Cursor<Bytes>,
 ) -> crate::Result<SessionHistoryPacket> {
     if cursor.remaining() < 1155 {
-        return Err(crate::TelemetryError::InvalidPacket);
+        return Err(crate::TelemetryError::InvalidPacket("packet too small".to_owned()));
     }
 
     let header = parse_header(cursor)?;
@@ -48,9 +48,21 @@ pub fn parse_session_history_packet(
 
 fn parse_lap_history_data(cursor: &mut Cursor<Bytes>) -> LapHistoryData {
     let lap_time_in_ms = cursor.get_u32_le();
-    let sector1_time_in_ms = cursor.get_u16_le();
-    let sector2_time_in_ms = cursor.get_u16_le();
-    let sector3_time_in_ms = cursor.get_u16_le();
+    let sector_1_time_in_ms = cursor.get_u16_le();
+    let sector_1_time_in_minutes = cursor.get_u8();
+    let sector_1_time = Duration::from_millis(
+        sector_1_time_in_minutes as u64 * 60000 + sector_1_time_in_ms as u64,
+    );
+    let sector_2_time_in_ms = cursor.get_u16_le();
+    let sector_2_time_in_minutes = cursor.get_u8();
+    let sector_2_time = Duration::from_millis(
+        sector_2_time_in_minutes as u64 * 60000 + sector_2_time_in_ms as u64,
+    );
+    let sector_3_time_in_ms = cursor.get_u16_le();
+    let sector_3_time_in_minutes = cursor.get_u8();
+    let sector_3_time = Duration::from_millis(
+        sector_3_time_in_minutes as u64 * 60000 + sector_3_time_in_ms as u64,
+    );
     let lap_valid_bit_flags = cursor.get_u8();
     let lap_valid = (lap_valid_bit_flags & 0x01) != 0;
     let sector_1_valid = (lap_valid_bit_flags & 0x02) != 0;
@@ -59,9 +71,9 @@ fn parse_lap_history_data(cursor: &mut Cursor<Bytes>) -> LapHistoryData {
 
     LapHistoryData {
         lap_time_in_ms,
-        sector1_time_in_ms,
-        sector2_time_in_ms,
-        sector3_time_in_ms,
+        sector_1_time,
+        sector_2_time,
+        sector_3_time,
         lap_valid,
         sector_1_valid,
         sector_2_valid,

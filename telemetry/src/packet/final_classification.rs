@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use serde::{Serialize, Deserialize};
 
 use super::{header::Header, lap_data::ResultStatus, car_status::TyreCompound};
@@ -17,8 +19,8 @@ pub struct FinalClassificationData {
     pub points: u8,
     pub num_pit_stops: u8,
     pub status: ResultStatus,
-    pub best_laptime_in_ms: u32,
-    pub total_race_time_without_penalties_in_seconds: f64,
+    pub best_laptime: Duration,
+    pub total_race_time_without_penalties: Duration,
     pub penalty_time_in_seconds: u8,
     pub num_penalties: u8,
     pub tyre_stints: Vec<TyreStint>,

@@ -3,11 +3,16 @@ use std::io::{Cursor, Read};
 use bytes::{Buf, Bytes};
 use serde::__private::from_utf8_lossy;
 
-use crate::packet::participants::{ParticipantData, ParticipantsPacket, Team};
+use crate::packet::participants::{ParticipantData, ParticipantsPacket, Platform, Team, Telemetry};
 
 use super::header::parse_header;
 
 pub fn parse_participants_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<ParticipantsPacket> {
+    if cursor.remaining() != 1306 {
+        return Err(crate::TelemetryError::InvalidPacket(
+            "Invalid participants packet length".to_owned(),
+        ));
+    }
     let header = parse_header(cursor)?;
 
     let num_active_cars = cursor.get_u8();
@@ -24,7 +29,7 @@ fn parse_participants_data(cursor: &mut Cursor<Bytes>) -> ParticipantData {
     let ai_controlled = cursor.get_u8() != 0;
     let driver_id = cursor.get_u8();
     let network_id = cursor.get_u8();
-    let team_id = parse_team(cursor);
+    let team_id = parse_team(cursor.get_u8());
     let my_team = cursor.get_u8() != 0;
     let race_number = cursor.get_u8();
     let nationality = match cursor.get_u8() {
@@ -120,8 +125,20 @@ fn parse_participants_data(cursor: &mut Cursor<Bytes>) -> ParticipantData {
     let mut name = [0_u8; 48];
     let _ = cursor.read_exact(&mut name); // Shouldn't error if the packet is not malformed
     let name_end = name.iter().position(|&c| c == 0).unwrap_or(48);
-    let name = from_utf8_lossy(&name[0..name_end]).to_string();
-    let your_telemetry = cursor.get_u8() != 0;
+    let name = from_utf8_lossy(&name[0..name_end]).to_string().replace('\u{00a0}', " ");
+    let your_telemetry = if cursor.get_u8() == 1 {
+        Telemetry::Public
+    } else {
+        Telemetry::Restricted
+    };
+    let show_online_names = cursor.get_u8() != 0;
+    let platform = match cursor.get_u8() {
+        1 => Some(Platform::Steam),
+        3 => Some(Platform::PlayStation),
+        4 => Some(Platform::Xbox),
+        6 => Some(Platform::Origin),
+        _ => None,
+    };
 
     ParticipantData {
         ai_controlled,
@@ -133,33 +150,35 @@ fn parse_participants_data(cursor: &mut Cursor<Bytes>) -> ParticipantData {
         nationality,
         name,
         your_telemetry,
+        show_online_names,
+        platform
     }
 }
 
-pub fn parse_team(cursor: &mut Cursor<Bytes>) -> Team {
-    match cursor.get_u8() {
-        0 | 85 => Team::Mercedes,
-        1 | 86 => Team::Ferrari,
-        2 | 87 => Team::RedBullRacing,
-        3 | 88 => Team::Williams,
-        4 => Team::AstonMartin,
-        5 => Team::Alpine,
-        6 | 91 => Team::AlphaTauri,
-        7 | 92 => Team::Haas,
-        8 | 93 => Team::McLaren,
-        9 | 94 => Team::AlfaRomeo,
-
-        106 => Team::Prema,
-        107 => Team::UniVirtuosi,
-        108 => Team::Carlin,
-        109 => Team::Hitech,
-        110 => Team::ArtGP,
-        111 => Team::MPMotorsport,
-        112 => Team::Charouz,
-        113 => Team::Dams,
-        114 => Team::Campos,
+pub fn parse_team(team_id: u8) -> Team {
+    match team_id {
+        0 | 85 | 118 => Team::Mercedes,
+        1 | 86 | 119 => Team::Ferrari,
+        2 | 87 | 120 => Team::RedBullRacing,
+        3 | 88 | 121 => Team::Williams,
+        4 | 122 => Team::AstonMartin,
+        5 | 123 => Team::Alpine,
+        6 | 91 | 124 => Team::AlphaTauri,
+        7 | 92 | 125 => Team::Haas,
+        8 | 93 | 126 => Team::McLaren,
+        9 | 94 | 127 => Team::AlfaRomeo,
+        128 | 129 => Team::Konnersport,
+        106 | 130 => Team::Prema,
+        107 | 131 => Team::UniVirtuosi,
+        108 | 132 => Team::Carlin,
+        109 | 139 => Team::Hitech,
+        110 | 140 => Team::ArtGP,
+        111 | 133 => Team::MPMotorsport,
+        112 | 134 => Team::Charouz,
+        113 | 135 => Team::Dams,
+        114 | 136 => Team::Campos,
         115 => Team::BWT,
-        116 => Team::Trident,
+        116 | 138 => Team::Trident,
 
         95..=96 | 98..=101 | 103 | 117 => Team::Supercar,
         97 | 102 => Team::SafetyCar,

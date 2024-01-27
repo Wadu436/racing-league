@@ -5,12 +5,19 @@ use std::io::Cursor;
 use crate::packet::session::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy, Formula, GameMode,
     GearboxAssist, MarshalFlag, MarshalZone, Ruleset, SafetyCarStatus, SessionLength,
-    SessionPacket, SessionType, Track, Weather, WeatherForecastSample,
+    SessionPacket, SessionType, SpeedUnit, TempChange, TempUnit, Track, Weather,
+    WeatherForecastSample,
 };
 
 use super::header::parse_header;
 
 pub fn parse_session_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<SessionPacket> {
+    if cursor.remaining() != 644 {
+        return Err(crate::TelemetryError::InvalidPacket(
+            "invalid session packet length".to_owned(),
+        ));
+    }
+
     let header = parse_header(cursor)?;
 
     let weather = parse_weather(cursor);
@@ -95,8 +102,32 @@ pub fn parse_session_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<Session
 
     let game_mode = parse_game_mode(cursor);
     let ruleset = parse_ruleset(cursor);
-    let time_of_day = Some(cursor.get_u32_le());
+    let time_of_day = cursor.get_u32_le();
     let session_length = parse_session_length(cursor);
+
+    let speed_units_lead_player = if cursor.get_u8() == 0 {
+        SpeedUnit::Mph
+    } else {
+        SpeedUnit::Kmh
+    };
+    let temperature_units_lead_player = if cursor.get_u8() == 0 {
+        TempUnit::Celsius
+    } else {
+        TempUnit::Fahrenheit
+    };
+    let speed_units_secondary_player = if cursor.get_u8() == 0 {
+        SpeedUnit::Mph
+    } else {
+        SpeedUnit::Kmh
+    };
+    let temperature_units_secondary_player = if cursor.get_u8() == 0 {
+        TempUnit::Celsius
+    } else {
+        TempUnit::Fahrenheit
+    };
+    let num_safety_car_periods = cursor.get_u8();
+    let num_virtual_safety_car_periods = cursor.get_u8();
+    let num_red_flag_periods = cursor.get_u8();
 
     Ok(SessionPacket {
         header,
@@ -140,6 +171,13 @@ pub fn parse_session_packet(cursor: &mut Cursor<Bytes>) -> crate::Result<Session
         ruleset,
         time_of_day,
         session_length,
+        speed_units_lead_player,
+        temperature_units_lead_player,
+        speed_units_secondary_player,
+        temperature_units_secondary_player,
+        num_safety_car_periods,
+        num_virtual_safety_car_periods,
+        num_red_flag_periods,
     })
 }
 
@@ -177,6 +215,8 @@ fn parse_track(cursor: &mut Cursor<Bytes>) -> Track {
         28 => Track::Portimao,
         29 => Track::Jeddah,
         30 => Track::Miami,
+        31 => Track::Vegas,
+        32 => Track::Losail,
         _ => Track::Unknown,
     }
 }
@@ -187,7 +227,6 @@ pub fn parse_marshal_flag(cursor: &mut Cursor<Bytes>) -> MarshalFlag {
         1 => MarshalFlag::Green,
         2 => MarshalFlag::Blue,
         3 => MarshalFlag::Yellow,
-        4 => MarshalFlag::Red,
         _ => MarshalFlag::Unknown,
     }
 }
@@ -238,9 +277,17 @@ fn parse_weather_forecast_sample(cursor: &mut Cursor<Bytes>) -> WeatherForecastS
     let weather = parse_weather(cursor);
 
     let track_temperature = cursor.get_i8();
-    let track_temperature_change = cursor.get_i8();
+    let track_temperature_change = match cursor.get_i8() {
+        0 => TempChange::Increase,
+        1 => TempChange::Decrease,
+        _ => TempChange::NoChange,
+    };
     let air_temperature = cursor.get_i8();
-    let air_temperature_change = cursor.get_i8();
+    let air_temperature_change = match cursor.get_i8() {
+        0 => TempChange::Increase,
+        1 => TempChange::Decrease,
+        _ => TempChange::NoChange,
+    };
     let rain_percentage = cursor.get_u8();
 
     WeatherForecastSample {
@@ -255,10 +302,11 @@ fn parse_weather_forecast_sample(cursor: &mut Cursor<Bytes>) -> WeatherForecastS
     }
 }
 
-fn parse_game_mode(cursor: &mut Cursor<Bytes>) -> Option<GameMode> {
-    Some(match cursor.get_u8() {
+fn parse_game_mode(cursor: &mut Cursor<Bytes>) -> GameMode {
+    match cursor.get_u8() {
         0 => GameMode::EventMode,
         3 => GameMode::GrandPrix,
+        4 => GameMode::GrandPrix23,
         5 => GameMode::TimeTrial,
         6 => GameMode::Splitscreen,
         7 => GameMode::OnlineCustom,
@@ -268,15 +316,18 @@ fn parse_game_mode(cursor: &mut Cursor<Bytes>) -> Option<GameMode> {
         13 => GameMode::Championship,
         14 => GameMode::OnlineChampionship,
         15 => GameMode::OnlineWeeklyEvent,
+        17 => GameMode::StoryMode,
         19 => GameMode::Career22,
         20 => GameMode::Career22Online,
+        21 => GameMode::Career23,
+        22 => GameMode::Career23Online,
         127 => GameMode::Benchmark,
-        _ => return None,
-    })
+        _ => GameMode::Unknown,
+    }
 }
 
-fn parse_ruleset(cursor: &mut Cursor<Bytes>) -> Option<Ruleset> {
-    Some(match cursor.get_u8() {
+fn parse_ruleset(cursor: &mut Cursor<Bytes>) -> Ruleset {
+    match cursor.get_u8() {
         0 => Ruleset::PracticeAndQualifying,
         1 => Ruleset::Race,
         2 => Ruleset::TimeTrial,
@@ -286,12 +337,12 @@ fn parse_ruleset(cursor: &mut Cursor<Bytes>) -> Option<Ruleset> {
         9 => Ruleset::Drift,
         10 => Ruleset::AverageSpeedZone,
         11 => Ruleset::RivalDuel,
-        _ => return None,
-    })
+        _ => Ruleset::Unknown,
+    }
 }
 
-fn parse_session_length(cursor: &mut Cursor<Bytes>) -> Option<SessionLength> {
-    Some(match cursor.get_u8() {
+fn parse_session_length(cursor: &mut Cursor<Bytes>) -> SessionLength {
+    match cursor.get_u8() {
         0 => SessionLength::None,
         2 => SessionLength::VeryShort,
         3 => SessionLength::Short,
@@ -299,6 +350,6 @@ fn parse_session_length(cursor: &mut Cursor<Bytes>) -> Option<SessionLength> {
         5 => SessionLength::MediumLong,
         6 => SessionLength::Long,
         7 => SessionLength::Full,
-        _ => return None,
-    })
+        _ => SessionLength::None,
+    }
 }

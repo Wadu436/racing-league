@@ -10,9 +10,9 @@ use bytes::{Buf, Bytes};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use telemetry::{
-    decode_packet,
+    decode_header, decode_packet,
     packet::{
-        final_classification::TyreStint, header::PacketId, lap_data::ResultStatus,
+        event::Event, final_classification::TyreStint, header::PacketId, lap_data::ResultStatus,
         participants::Team, Packet,
     },
 };
@@ -45,8 +45,8 @@ struct RaceParticipant {
     player: PlayerData,
     num_pitstops: u8,
     tyre_stints: Vec<TyreStint>,
-    fastest_lap_in_ms: u32,
-    total_time_without_penalties_in_ms: u32,
+    fastest_lap: f32,
+    total_time_without_penalties: f32,
     penalty_time_in_s: u8,
     laps: Vec<RaceLap>,
 }
@@ -54,10 +54,10 @@ struct RaceParticipant {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct RaceLap {
     lap_number: u8,
-    lap_time_in_ms: u32,
-    sector_1_time_in_ms: u16,
-    sector_2_time_in_ms: u16,
-    sector_3_time_in_ms: u16,
+    lap_time: f32,
+    sector_1_time: f32,
+    sector_2_time: f32,
+    sector_3_time: f32,
     lap_valid: bool,
     position: u8, // Position at the end of the lap
     safety_car: bool,
@@ -80,8 +80,7 @@ struct DiskPacket {
 pub fn initialize(level: impl Into<LevelFilter>) -> eyre::Result<()> {
     color_eyre::install()?;
 
-    let subscriber = FmtSubscriber::builder().with_max_level(level).finish();
-    tracing::subscriber::set_global_default(subscriber)?;
+    FmtSubscriber::builder().with_max_level(level).init();
 
     Ok(())
 }
@@ -139,6 +138,7 @@ pub fn parse<P: AsRef<Path>>(
     file: P,
     out: Option<P>,
     filter: Option<Vec<PacketId>>,
+    limit: Option<usize>,
 ) -> Result<(), eyre::Error> {
     let mut file = std::fs::File::open(file)?;
     let metadata = file.metadata()?;
@@ -151,15 +151,38 @@ pub fn parse<P: AsRef<Path>>(
         let time = bytes.get_f64();
         let time = Duration::from_secs_f64(time);
         let packet_bytes = bytes.copy_to_bytes(size);
-        let packet = decode_packet(packet_bytes)?;
 
-        if let Some(filter) = &filter {
-            if !filter.contains(&packet.header().packet_id) {
-                continue;
-            }
+        if let Some(true) = limit.and_then(|l| Some(packets.len() > l)) {
+            break;
         }
 
-        packets.push(DiskPacket { time, packet });
+        // Only decode the packet if it is in our filter list
+        match decode_header(packet_bytes.clone()) {
+            Ok(header) => {
+                if let Some(filter) = &filter {
+                    if !filter.contains(&header.packet_id) {
+                        continue;
+                    }
+                }
+                match decode_packet(packet_bytes) {
+                    Ok(packet) => {
+                        if let Packet::Event(event_packet) = packet {
+                            if let Event::Button { .. } = event_packet.event {
+                                continue;
+                            }
+                        };
+
+                        packets.push(DiskPacket { time, packet });
+                    }
+                    Err(e) => {
+                        warn!("Could not parse packet: {}", e);
+                    }
+                }
+            }
+            Err(e) => {
+                warn!("Could not parse packet: {}", e);
+            }
+        }
     }
 
     let packets_json = serde_json::to_string_pretty(&packets)?;
@@ -185,17 +208,23 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
         let time = bytes.get_f64();
         let time = Duration::from_secs_f64(time);
         let packet_bytes = bytes.copy_to_bytes(size);
-        let packet = decode_packet(packet_bytes)?;
-        if ![
-            PacketId::FinalClassification,
-            PacketId::Participants,
-            PacketId::LapData,
-        ]
-        .contains(&packet.header().packet_id)
-        {
-            continue;
+        match decode_packet(packet_bytes) {
+            Ok(packet) => {
+                if ![
+                    PacketId::FinalClassification,
+                    PacketId::Participants,
+                    PacketId::LapData,
+                ]
+                .contains(&packet.header().packet_id)
+                {
+                    continue;
+                }
+                packets.push(DiskPacket { time, packet });
+            }
+            Err(e) => {
+                warn!("Could not parse packet: {}", e);
+            }
         }
-        packets.push(DiskPacket { time, packet });
     }
 
     // Find the last participants packet
@@ -215,8 +244,8 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
         #[derive(Copy, Clone)]
         struct TempLap {
             lap_number: u8,
-            sector_1_time_in_ms: u16,
-            sector_2_time_in_ms: u16,
+            sector_1_time: Duration,
+            sector_2_time: Duration,
             lap_valid: bool,
             safety_car: bool,
             virtual_safety_car: bool,
@@ -225,8 +254,8 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
         let mut laps: [Vec<RaceLap>; 22] = Default::default();
         let mut current_lap_data: [TempLap; 22] = [TempLap {
             lap_number: 1,
-            sector_1_time_in_ms: 0,
-            sector_2_time_in_ms: 0,
+            sector_1_time: Duration::default(),
+            sector_2_time: Duration::default(),
             lap_valid: true,
             safety_car: false,
             virtual_safety_car: false,
@@ -243,32 +272,34 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
             })
             .flat_map(|packet| packet.lap_data.iter().enumerate())
             .for_each(|(idx, lap_data)| {
-                if lap_data.current_lap_num > current_lap_data[idx].lap_number {
-                    // Just crossed the line
-                    laps[idx].push(RaceLap {
-                        lap_number: current_lap_data[idx].lap_number,
-                        lap_time_in_ms: lap_data.last_lap_time_in_ms,
-                        sector_1_time_in_ms: current_lap_data[idx].sector_1_time_in_ms,
-                        sector_2_time_in_ms: current_lap_data[idx].sector_2_time_in_ms,
-                        sector_3_time_in_ms: (lap_data.last_lap_time_in_ms
-                            - current_lap_data[idx].sector_2_time_in_ms as u32
-                            - current_lap_data[idx].sector_1_time_in_ms as u32)
-                            as u16,
-                        lap_valid: current_lap_data[idx].lap_valid,
-                        position: lap_data.car_position,
-                        safety_car: current_lap_data[idx].safety_car,
-                        virtual_safety_car: current_lap_data[idx].virtual_safety_car,
-                    });
+                if let Some(lap_data) = lap_data {
+                    if lap_data.current_lap_num > current_lap_data[idx].lap_number {
+                        // Just crossed the line
+                        laps[idx].push(RaceLap {
+                            lap_number: current_lap_data[idx].lap_number,
+                            lap_time: lap_data.last_lap_time.as_secs_f32(),
+                            sector_1_time: current_lap_data[idx].sector_1_time.as_secs_f32(),
+                            sector_2_time: current_lap_data[idx].sector_2_time.as_secs_f32(),
+                            sector_3_time: (lap_data.last_lap_time.as_secs_f32()
+                                - current_lap_data[idx].sector_2_time.as_secs_f32()
+                                - current_lap_data[idx].sector_1_time.as_secs_f32()),
+
+                            lap_valid: current_lap_data[idx].lap_valid,
+                            position: lap_data.car_position,
+                            safety_car: current_lap_data[idx].safety_car,
+                            virtual_safety_car: current_lap_data[idx].virtual_safety_car,
+                        });
+                    }
+                    // TODO: handle SC/VSC
+                    current_lap_data[idx] = TempLap {
+                        lap_number: lap_data.current_lap_num,
+                        sector_1_time: lap_data.sector_1_time,
+                        sector_2_time: lap_data.sector_2_time,
+                        lap_valid: !lap_data.current_lap_invalid,
+                        safety_car: false,
+                        virtual_safety_car: false,
+                    };
                 }
-                // TODO: handle SC/VSC
-                current_lap_data[idx] = TempLap {
-                    lap_number: lap_data.current_lap_num,
-                    sector_1_time_in_ms: lap_data.sector1_time_in_ms,
-                    sector_2_time_in_ms: lap_data.sector2_time_in_ms,
-                    lap_valid: !lap_data.current_lap_invalid,
-                    safety_car: false,
-                    virtual_safety_car: false,
-                };
             });
 
         laps
@@ -311,12 +342,11 @@ pub fn race<P: AsRef<Path>>(file: P, out: Option<P>) -> Result<(), eyre::Error> 
                         nationality: participant_data.nationality,
                     },
                     tyre_stints: data.tyre_stints.clone(),
-                    fastest_lap_in_ms: data.best_laptime_in_ms,
+                    fastest_lap: data.best_laptime.as_secs_f32(),
                     penalty_time_in_s: data.penalty_time_in_seconds,
-                    total_time_without_penalties_in_ms: (data
-                        .total_race_time_without_penalties_in_seconds
-                        * 1000.)
-                        .round() as u32,
+                    total_time_without_penalties: data
+                        .total_race_time_without_penalties
+                        .as_secs_f32(),
                     laps: lap_data[index].clone(),
                 }
             })

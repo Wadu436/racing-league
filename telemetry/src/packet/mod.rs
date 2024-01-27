@@ -26,6 +26,8 @@ pub enum Packet {
     LobbyInfo(lobby_info::LobbyInfoPacket),
     CarDamage(header::Header),
     SessionHistory(session_history::SessionHistoryPacket),
+    TyreSets(header::Header),
+    MotionEx(header::Header)
 }
 
 impl Packet {
@@ -43,6 +45,8 @@ impl Packet {
             Packet::LobbyInfo(p) => p.header,
             Packet::CarDamage(p) => *p,
             Packet::SessionHistory(p) => p.header,
+            Packet::TyreSets(p) => *p,
+            Packet::MotionEx(p) => *p
         }
     }
 }

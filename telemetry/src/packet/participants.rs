@@ -7,31 +7,24 @@ pub enum Team {
     Unknown,
     Mercedes,
     Ferrari,
-    #[serde(rename = "Red Bull Racing")]
     RedBullRacing,
     Williams,
-    #[serde(rename = "Aston Martin")]
     AstonMartin,
     Alpine,
-    #[serde(rename = "Alpha Tauri")]
     AlphaTauri,
     Haas,
     McLaren,
-    #[serde(rename = "Alfa Romeo")]
     AlfaRomeo,
-    #[serde(rename = "Racing Point")]
     RacingPoint,
     Renault,
-    #[serde(rename = "Art GP")]
+    Konnersport,
     ArtGP,
     Campos,
     Carlin,
-    #[serde(rename = "Sauber Junior Charouz")]
     SauberJuniorCharouz,
     Dams,
-    #[serde(rename = "Uni-Virtuosi")]
     UniVirtuosi,
-    #[serde(rename = "MP Motorsport")]
+    Virtuosi,
     MPMotorsport,
     Prema,
     Trident,
@@ -39,9 +32,23 @@ pub enum Team {
     Charouz,
     BWT,
     Hitech,
+    VanAmersfoortRacing,
     Supercar,
     SafetyCar,
     CustomTeam,
+}
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum Platform {
+    Steam,
+    PlayStation,
+    Xbox,
+    Origin,
+}
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum Telemetry {
+    Restricted, Public
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -54,7 +61,9 @@ pub struct ParticipantData {
     pub race_number: u8,
     pub nationality: Option<celes::Country>,
     pub name: String,
-    pub your_telemetry: bool,
+    pub your_telemetry: Telemetry,
+    pub show_online_names: bool,
+    pub platform: Option<Platform>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
