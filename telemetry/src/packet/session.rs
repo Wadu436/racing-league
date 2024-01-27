@@ -100,7 +100,7 @@ pub enum Formula {
     F2_2021,
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SafetyCarStatus {
     No,
     Full,

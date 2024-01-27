@@ -30,5 +30,5 @@ pub struct FinalClassificationData {
 pub struct FinalClassificationPacket {
     pub header: Header,
 
-    pub classification_data: Vec<FinalClassificationData>,
+    pub classification_data: Vec<Option<FinalClassificationData>>,
 }

@@ -34,7 +34,7 @@ pub fn parse_lap_data(cursor: &mut Cursor<Bytes>) -> Option<LapData> {
     let sector2_time_in_ms = cursor.get_u16_le();
     let sector2_time_in_minutes = cursor.get_u8();
     let sector_2_time =
-        Duration::from_millis(sector2_time_in_ms as u64 * 60000 + sector2_time_in_minutes as u64);
+        Duration::from_millis(sector2_time_in_minutes as u64 * 60000 + sector2_time_in_ms as u64);
     let delta_to_car_in_front_in_ms = cursor.get_u16_le();
     let delta_to_car_in_front = Duration::from_millis(delta_to_car_in_front_in_ms.into());
     let delta_to_race_leader_in_ms = cursor.get_u16_le();

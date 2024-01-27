@@ -4,7 +4,7 @@ use bytes::{Buf, Bytes};
 
 use crate::packet::session_history::{LapHistoryData, SessionHistoryPacket, TyreStintHistoryData};
 
-use super::{car_status::parse_tyre_compound, header::parse_header};
+use super::{car_status::{parse_tyre_compound_actual, parse_tyre_compound_visual}, header::parse_header};
 
 pub fn parse_session_history_packet(
     cursor: &mut Cursor<Bytes>,
@@ -83,8 +83,8 @@ fn parse_lap_history_data(cursor: &mut Cursor<Bytes>) -> LapHistoryData {
 
 fn parse_tyre_stint_history_data(cursor: &mut Cursor<Bytes>) -> TyreStintHistoryData {
     let end_lap = cursor.get_u8();
-    let actual_tyre = parse_tyre_compound(cursor.get_u8());
-    let visual_tyre = parse_tyre_compound(cursor.get_u8());
+    let actual_tyre = parse_tyre_compound_actual(cursor.get_u8());
+    let visual_tyre = parse_tyre_compound_visual(cursor.get_u8());
 
     TyreStintHistoryData {
         end_lap,

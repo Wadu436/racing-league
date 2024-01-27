@@ -8,7 +8,7 @@ use crate::{
 };
 
 
-use super::{header::parse_header, lap_data::parse_result_data, car_status::parse_tyre_compound};
+use super::{header::parse_header, lap_data::parse_result_data, car_status::{parse_tyre_compound_actual, parse_tyre_compound_visual}};
 
 pub fn parse_final_classification_packet(
     cursor: &mut Cursor<Bytes>,
@@ -20,9 +20,18 @@ pub fn parse_final_classification_packet(
     }
 
     let header = parse_header(cursor)?;
-    let num_cars = cursor.get_u8();
-    let classification_data = (0..num_cars)
-        .map(|_| parse_final_classification_data(cursor))
+    let _num_cars = cursor.get_u8();
+    let classification_data = (0..22)
+        .map(|_| {
+            let classification_data = parse_final_classification_data(cursor);
+            classification_data.map(|cd| {
+                if cd.status.valid_result() {
+                    Some(cd)
+                } else {
+                    None
+                }
+            })
+        })
         .collect::<Result<Vec<_>>>()?;
 
     Ok(FinalClassificationPacket {
@@ -46,8 +55,8 @@ fn parse_final_classification_data(cursor: &mut Cursor<Bytes>) -> Result<FinalCl
     let tyre_data = cursor.copy_to_bytes(24);
     let tyre_stints = (0..num_tyre_stints as usize)
         .map(|i| {
-            let actual_tyre = parse_tyre_compound(tyre_data[i]);
-            let visual_tyre = parse_tyre_compound(tyre_data[8 + i]);
+            let actual_tyre = parse_tyre_compound_actual(tyre_data[i]);
+            let visual_tyre = parse_tyre_compound_visual(tyre_data[8 + i]);
             let end_lap = tyre_data[16 + i];
             TyreStint {
                 actual_tyre,

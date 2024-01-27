@@ -2,8 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use super::header::Header;
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, Default)]
 pub enum Team {
+    #[default]
     Unknown,
     Mercedes,
     Ferrari,

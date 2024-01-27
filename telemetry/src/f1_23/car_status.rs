@@ -46,17 +46,8 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
     let max_gears = cursor.get_u8();
     let drs_allowed = cursor.get_u8();
     let drs_activation_distance = cursor.get_u16_le();
-    let actual_tyre_compound = parse_tyre_compound(cursor.get_u8());
-    let visual_tyre_compound = match cursor.get_u8() {
-        7 => TyreCompound::Inter,
-        8 | 10 | 15 => TyreCompound::Wet,
-        9 => TyreCompound::Dry,
-        19 => TyreCompound::SuperSoft,
-        16 | 20 => TyreCompound::Soft,
-        17 | 21 => TyreCompound::Medium,
-        18 | 22 => TyreCompound::Hard,
-        _ => TyreCompound::Hard,
-    };
+    let actual_tyre_compound = parse_tyre_compound_actual(cursor.get_u8());
+    let visual_tyre_compound = parse_tyre_compound_visual(cursor.get_u8());
     let tyres_age_laps = cursor.get_u8();
     let vehicle_fia_flags = parse_marshal_flag(cursor);
     let engine_power_ice = cursor.get_f32_le();
@@ -103,7 +94,7 @@ fn parse_car_status_data(cursor: &mut Cursor<Bytes>) -> CarStatusData {
     }
 }
 
-pub fn parse_tyre_compound(compound: u8) -> TyreCompound {
+pub fn parse_tyre_compound_actual(compound: u8) -> TyreCompound {
     match compound {
         16 => TyreCompound::C5,
         17 => TyreCompound::C4,
@@ -118,6 +109,21 @@ pub fn parse_tyre_compound(compound: u8) -> TyreCompound {
         12 => TyreCompound::Soft,
         13 => TyreCompound::Medium,
         14 => TyreCompound::Hard,
+        _ => TyreCompound::Hard,
+    }
+}
+pub fn parse_tyre_compound_visual(compound: u8) -> TyreCompound {
+    match compound {
+        16 => TyreCompound::Soft,
+        17 => TyreCompound::Medium,
+        18 => TyreCompound::Hard,
+        7 => TyreCompound::Inter,
+        8 | 10 | 15 => TyreCompound::Wet,
+        9 => TyreCompound::Dry,
+        19 => TyreCompound::SuperSoft,
+        20 => TyreCompound::Soft,
+        21 => TyreCompound::Medium,
+        22 => TyreCompound::Hard,
         _ => TyreCompound::Hard,
     }
 }

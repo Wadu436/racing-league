@@ -3,7 +3,7 @@ use color_eyre::eyre::Result;
 use tracing::level_filters::LevelFilter;
 
 use std::path::PathBuf;
-use telemetry_cli::{initialize, parse, race, record};
+use telemetry_cli::{initialize, parse, race2, record};
 
 #[derive(Parser, Debug)]
 #[command(author = "Warre Dujardin", version = "0.1.0", about = "Utility for recording and parsing F1 telemetry packets", long_about = None)]
@@ -68,6 +68,8 @@ enum Commands {
         filter: Option<Vec<PacketId>>,
         #[clap(short = 'n', long)]
         limit: Option<usize>,
+        #[clap(long)]
+        session_id: Option<u64>,
     },
     #[clap(
         about = "Parse a previously recorded stream of UDP packets into race data for the website"
@@ -100,16 +102,18 @@ fn main() -> Result<()> {
             out,
             filter,
             limit,
+            session_id
         } => {
             parse(
                 file,
                 out,
                 filter.map(|filters| filters.into_iter().map(Into::into).collect::<Vec<_>>()),
                 limit,
+                session_id
             )?;
         }
         Commands::Race { file, out } => {
-            race(file, out)?;
+            race2(file, out)?;
         }
     }
 

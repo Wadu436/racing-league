@@ -4,21 +4,21 @@ use serde::{Serialize, Deserialize};
 
 use super::header::Header;
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum PitStatus {
     None,
     Pitting,
     InPitArea,
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Sector {
     Sector1,
     Sector2,
     Sector3,
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum DriverStatus {
     InGarage,
     FlyingLap,
@@ -37,6 +37,15 @@ pub enum ResultStatus {
     Disqualified,
     NotClassified,
     Retired,
+}
+
+impl ResultStatus {
+    pub fn valid_result(&self) -> bool {
+        match self {
+            Self::Invalid | Self::Inactive | Self::NotClassified => false,
+            _ => true,
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
