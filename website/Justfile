@@ -1,0 +1,2 @@
+generate-migrations:
+    pnpm drizzle-kit generate:sqlite
