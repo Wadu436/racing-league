@@ -15,7 +15,7 @@ import type { Cookies } from '@sveltejs/kit';
 
 // export type Auth = typeof auth;
 
-const adapter = new BetterSqlite3Adapter(sqliteDb, { user: 'user', session: 'session' });
+const adapter = new BetterSqlite3Adapter(sqliteDb, { user: 'users', session: 'sessions' });
 
 export const lucia = new Lucia(adapter, {
 	sessionCookie: {

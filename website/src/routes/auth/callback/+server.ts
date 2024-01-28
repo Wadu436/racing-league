@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db/db.js';
-import { newUsers, oauth_account } from '$lib/server/db/schema.js';
+import { newUsers, oauthAccounts } from '$lib/server/db/schema.js';
 import { lucia, setCookie } from '$lib/server/lucia.js';
 import { googleAuth } from '$lib/server/oauth.js';
 import { error, redirect } from '@sveltejs/kit';
@@ -42,10 +42,10 @@ export const GET = async ({ url, cookies }) => {
 		const googleUser = parse(GoogleUserSchema, parseJWT(googleTokens.idToken)!.payload);
 
 		// Check if the user already exists in the database
-		const existingUser = await db.query.oauth_account.findFirst({
+		const existingUser = await db.query.oauthAccounts.findFirst({
 			where: and(
-				eq(oauth_account.providerUserId, googleUser.sub),
-				eq(oauth_account.providerId, 'google')
+				eq(oauthAccounts.providerUserId, googleUser.sub),
+				eq(oauthAccounts.providerId, 'google')
 			)
 		});
 

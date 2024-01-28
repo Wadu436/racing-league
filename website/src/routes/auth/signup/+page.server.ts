@@ -4,7 +4,7 @@ import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db/db';
 import { eq } from 'drizzle-orm';
-import { newUsers, oauth_account, user } from '$lib/server/db/schema';
+import { newUsers, oauthAccounts, users } from '$lib/server/db/schema';
 
 export const load = async ({ url }) => {
 	const newUserKey = url.searchParams.get('new_user_key');
@@ -39,8 +39,8 @@ export const actions = {
 		try {
 			const dbUser = { id: newUser.id, username: username };
 			await db.transaction(async (tx) => {
-				await tx.insert(user).values(dbUser);
-				await tx.insert(oauth_account).values({
+				await tx.insert(users).values(dbUser);
+				await tx.insert(oauthAccounts).values({
 					providerId: newUser.providerId,
 					providerUserId: newUser.providerUserId,
 					userId: newUser.id

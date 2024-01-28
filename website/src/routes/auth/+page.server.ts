@@ -26,9 +26,9 @@ export const actions = {
 		lucia.invalidateUserSessions(session.userId);
 		
 		await db.transaction(async (tx) => {
-			await tx.delete(schema.session).where(eq(schema.session.id, session.id));
-			await tx.delete(schema.oauth_account).where(eq(schema.oauth_account.userId, session.userId));
-			await tx.delete(schema.user).where(eq(schema.user.id, session.userId));
+			await tx.delete(schema.sessions).where(eq(schema.sessions.id, session.id));
+			await tx.delete(schema.oauthAccounts).where(eq(schema.oauthAccounts.userId, session.userId));
+			await tx.delete(schema.users).where(eq(schema.users.id, session.userId));
 		});
 		locals.session = undefined;
 		locals.user = undefined;
