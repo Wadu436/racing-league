@@ -6,7 +6,8 @@ export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
 	// other user attributes
 	username: text('username').unique().notNull(),
-	admin: integer('admin', { mode: 'boolean' })
+	admin: integer('admin', { mode: 'boolean' }).notNull(),
+	staff: integer('staff', { mode: 'boolean' }).notNull()
 });
 
 export const sessions = sqliteTable('sessions', {
@@ -52,14 +53,14 @@ export const tracks = sqliteTable('tracks', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	country: text('country', { length: 2 }).notNull(),
-	image_path: text('image_path').notNull()
+	image_path: text('image_path')
 });
 
 export const teams = sqliteTable('teams', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	country: text('country', { length: 2 }).notNull(),
-	image_path: text('image_path').notNull()
+	image_path: text('image_path')
 });
 
 export const leagues = sqliteTable('leagues', {

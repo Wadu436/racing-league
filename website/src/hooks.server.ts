@@ -28,8 +28,9 @@ const authHook: Handle = async ({ event, resolve }) => {
 
 // Hook to protect certain routes, so that only logged in users can access them
 const protectedHook: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith('/protected')) {
+	if (event.url.pathname.startsWith('/admin')) {
 		if (!event.locals.session) {
+			// TODO add access control here
 			const nextUrl = `${event.url.pathname}${event.url.search}`;
 			const signinUrl = new URL('/auth/signin', event.url);
 			signinUrl.searchParams.set('next', nextUrl);

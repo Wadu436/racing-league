@@ -140,7 +140,8 @@ CREATE TABLE `tyre_stints` (
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`username` text NOT NULL,
-	`admin` integer
+	`admin` integer NOT NULL,
+	`staff` integer NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `drivers_name_unique` ON `drivers` (`name`);--> statement-breakpoint

@@ -37,7 +37,7 @@ export const actions = {
 		}
 
 		try {
-			const dbUser = { id: newUser.id, username: username };
+			const dbUser = { id: newUser.id, username: username, admin: false, staff: false };
 			await db.transaction(async (tx) => {
 				await tx.insert(users).values(dbUser);
 				await tx.insert(oauthAccounts).values({

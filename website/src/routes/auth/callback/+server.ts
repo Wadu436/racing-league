@@ -25,7 +25,7 @@ const GoogleUserSchema = object({
 export const GET = async ({ url, cookies }) => {
 	const cookieStateJson = cookies.get('oauth-state');
 	if (!cookieStateJson) {
-		error(400);
+		error(400, "Invalid OAuth callback (no state cookie found)");
 	}
 	const cookieState: OauthStateCookie = JSON.parse(atob(cookieStateJson));
 
@@ -33,7 +33,7 @@ export const GET = async ({ url, cookies }) => {
 	const code = url.searchParams.get('code');
 
 	if (!cookieState || !state || cookieState.state !== state || !code) {
-		error(400);
+		error(400, "Invalid OAuth callback (invalid state)");
 	}
 
 	let redirect_to = cookieState.next ?? '/';
@@ -77,7 +77,8 @@ export const GET = async ({ url, cookies }) => {
 	} catch (e) {
 		if (e instanceof OAuth2RequestError) {
 			// invalid code
-			error(400);
+			console.error("OAuth2 error:",e);
+			error(400, "Invalid OAuth callback (OAuth2 error)");
 		}
 
 		console.error(e);

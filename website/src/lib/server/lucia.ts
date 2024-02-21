@@ -25,7 +25,9 @@ export const lucia = new Lucia(adapter, {
 	},
 	getUserAttributes(databaseUser) {
 		return {
-			username: databaseUser.username
+			username: databaseUser.username,
+			admin: databaseUser.admin != 0,
+			staff: databaseUser.staff != 0
 		};
 	}
 });
@@ -41,6 +43,8 @@ declare module 'lucia' {
 
 	type DatabaseUserAttributes = {
 		username: string;
+		admin: number;
+		staff: number;
 	};
 }
 

@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "d2c7fc0c-b299-45c4-8ad0-3ef7cc8ef06b",
+  "id": "b588a93c-2dc9-4b1b-923f-4814c6a09432",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "drivers": {
@@ -1000,7 +1000,14 @@
           "name": "admin",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "staff": {
+          "name": "staff",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         }
       },

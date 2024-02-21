@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import '../app.pcss';
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
-
-	export let data;
+	import type { LayoutData } from './$types';
+	export let data: LayoutData;
 </script>
 
 <AppShell>
@@ -13,7 +13,9 @@
 				<a href="/">racing.warre.dev</a>
 			</div>
 			<a class="anchor" href="/">home</a>
-			<a class="anchor" href="/protected">protected</a>
+			{#if data.user?.staff || data.user?.admin}
+				<a class="anchor" href="/admin">admin</a>
+			{/if}
 
 			<div slot="trail">
 				{#if data.user}
