@@ -5,7 +5,7 @@ export const load: PageLoad = async ({ parent, url }) => {
 	const data = await parent();
 
 	if (data.ProfileQuery.observer.state.data?.me != null) {
-		throw redirect(307, url.searchParams.get('redirect') ?? '/');
+		redirect(307, url.searchParams.get('redirect') ?? '/');
 	}
 
 	return data;

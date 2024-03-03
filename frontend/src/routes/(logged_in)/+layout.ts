@@ -7,7 +7,7 @@ export const load: LayoutLoad = async (event) => {
 
 	// TODO: redirect to a login page or something
 	if (data.session == null) {
-		throw redirect(303, '/');
+		redirect(303, '/');
 	}
 
 	const profileQuery = await load_ProfileQuery({ event });

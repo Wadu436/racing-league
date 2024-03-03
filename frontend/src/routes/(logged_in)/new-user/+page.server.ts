@@ -52,7 +52,7 @@ export const actions: Actions = {
 		);
 
 		if (response.errors == null) {
-			throw redirect(307, '/');
+			 redirect(307, '/');
 		}
 
 		return response;
