@@ -1,23 +1,21 @@
 <script lang="ts">
 	import '../app.pcss';
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
 	import type { LayoutData } from './$types';
 	export let data: LayoutData;
 </script>
 
-<AppShell>
-	<slot />
-	<div slot="header">
-		<AppBar>
-			<div slot="lead">
+<!-- Header -->
+<div class="flex h-screen w-screen flex-col">
+	<header class="flex-none">
+		<div class="flex">
+			<div>
 				<a href="/">racing.warre.dev</a>
 			</div>
 			<a class="anchor" href="/">home</a>
 			{#if data.user?.staff || data.user?.admin}
 				<a class="anchor" href="/admin">admin</a>
 			{/if}
-
-			<div slot="trail">
+			<div>
 				{#if data.user}
 					<p>Logged in as {data.user.username}</p>
 					<a class="anchor" href="/profile">Profile</a>
@@ -30,9 +28,17 @@
 					<a class="anchor" href="/auth/signin">Sign in</a>
 				{/if}
 			</div>
-		</AppBar>
+		</div>
+	</header>
+
+	<div class="flex h-full w-full flex-auto overflow-hidden">
+		<div class="flex flex-1 flex-col overflow-x-hidden" style:scrollbar-gutter="auto" on:scroll>
+			<main class="flex-auto"><slot /></main>
+
+			<!-- Footer -->
+			<footer>
+				<p>Footer</p>
+			</footer>
+		</div>
 	</div>
-	<div slot="pageFooter">
-		<p>Footer</p>
-	</div>
-</AppShell>
+</div>

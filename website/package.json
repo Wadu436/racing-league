@@ -44,11 +44,14 @@
 		"@lucia-auth/adapter-sqlite": "^3.0.0",
 		"arctic": "^1.1.4",
 		"better-sqlite3": "^9.4.0",
+		"clsx": "^2.1.0",
 		"dotenv": "^16.4.1",
 		"drizzle-orm": "^0.29.3",
 		"lucia": "^3.0.1",
 		"lucide-svelte": "^0.317.0",
 		"oslo": "^1.0.4",
+		"tailwind-merge": "^2.2.1",
+		"tailwind-variants": "^0.2.0",
 		"valibot": "^0.27.1"
 	}
 }
