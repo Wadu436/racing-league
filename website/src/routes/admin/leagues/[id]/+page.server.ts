@@ -1,17 +1,16 @@
 import { db } from '$lib/server/db/db';
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
-import { leagues, events as dbEvents, tracks, events } from '$lib/server/db/schema';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { leagues, events as dbEvents, events, games } from '$lib/server/db/schema';
+import { error, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { randomUUID } from 'crypto';
-import { message, superValidate } from 'sveltekit-superforms';
+import { message, setError, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { leagueInfoSchema } from './schema';
 
 // Define outside the load function so the adapter can be cached
 
-export const load: PageServerLoad = async ({ params, url }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	const id = params.id;
 
 	const league = await db.query.leagues.findFirst({
@@ -28,11 +27,11 @@ export const load: PageServerLoad = async ({ params, url }) => {
 		orderBy: [asc(dbEvents.leagueOrder)]
 	});
 
-	console.log(events);
+	const games = await db.query.games.findMany();
 
 	const form = await superValidate(league, valibot(leagueInfoSchema));
 
-	return { league, events, form };
+	return { league, events, form, games };
 };
 
 export const actions = {
@@ -52,7 +51,6 @@ export const actions = {
 			return fail(400, { reorderMessage: 'There was a database error' });
 		}
 	},
-	orderByDate: async ({ params }) => {},
 	save: async ({ request, params }) => {
 		const form = await superValidate(request, valibot(leagueInfoSchema));
 
@@ -60,11 +58,20 @@ export const actions = {
 			return fail(400, { form });
 		}
 
+		// Check if the game exists
+		if (form.data.gameId) {
+			const game = await db.query.games.findFirst({ where: eq(games.id, form.data.gameId) });
+			console.log(game);
+			if (!game) {
+				return setError(form, 'gameId', 'Game not found');
+			}
+		}
+
 		const id = params.id;
 		try {
 			await db
 				.update(leagues)
-				.set({ name: form.data.name, status: form.data.status })
+				.set({ name: form.data.name, status: form.data.status, gameId: form.data.gameId })
 				.where(eq(leagues.id, id));
 		} catch (e) {
 			return message(form, 'There was a database error', { status: 400 });

@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
-	// import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { Item } from '$lib/components/ui/dropdown-menu/index.js';
 	import { capitalize } from '$lib/util.js';
 	import FormField from '$lib/components/ui/form/form-field.svelte';
 	import {
@@ -12,21 +10,13 @@
 		FormFieldErrors,
 		FormLabel
 	} from '$lib/components/ui/form/index.js';
-	import FormDescription from '$lib/components/ui/form/form-description.svelte';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import Card from '$lib/components/ui/card/card.svelte';
-	import CardContent from '$lib/components/ui/card/card-content.svelte';
-	import CardTitle from '$lib/components/ui/card/card-title.svelte';
-	import { CardHeader } from '$lib/components/ui/card';
 	import dayjs from 'dayjs';
 	import { GripVertical } from 'lucide-svelte';
-	import { flip } from 'svelte/animate';
-	import { crossfade, fly } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { enhance as kitEnhance } from '$app/forms';
-	import { date } from 'drizzle-orm/mysql-core';
+	import { flip } from 'svelte/animate';
 
 	export let data;
 	export let form;
@@ -38,6 +28,14 @@
 		? {
 				label: capitalize($formData.status),
 				value: $formData.status
+			}
+		: undefined;
+
+	$: gameDict = Object.fromEntries(data.games.map((g) => [g.id, g]));
+	$: selectedGame = $formData.gameId
+		? {
+				value: $formData.gameId,
+				label: gameDict[$formData.gameId]?.name ?? $formData.gameId
 			}
 		: undefined;
 
@@ -70,7 +68,7 @@
 			return 0;
 		}
 	});
-    $: console.log('data.events:', data.events);
+	$: console.log('data.events:', data.events);
 	$: console.log('draggableEvents:', draggableEvents);
 	$: console.log('draggableEventsSorted:', draggableEventsSorted);
 
@@ -123,6 +121,30 @@
 									</Select.Content>
 								</Select.Root>
 								<input hidden bind:value={$formData.status} name={attrs.name} />
+							</FormControl>
+							<FormFieldErrors />
+						</FormField>
+
+						<FormField form={supaForm} name="gameId">
+							<FormControl let:attrs>
+								<FormLabel>Game</FormLabel>
+								<Select.Root
+									selected={selectedGame}
+									onSelectedChange={(v) => {
+										v && ($formData.gameId = v.value);
+									}}
+								>
+									<Select.Trigger>
+										<Select.Value placeholder="Select a game" />
+									</Select.Trigger>
+									<Select.Content>
+										<Select.Item value="foobar" label="fakegame >:(" />
+										{#each data.games as game (game.id)}
+											<Select.Item value={game.id} label={game.name} />
+										{/each}
+									</Select.Content>
+								</Select.Root>
+								<input hidden bind:value={$formData.gameId} name={attrs.name} />
 							</FormControl>
 							<FormFieldErrors />
 						</FormField>
@@ -185,6 +207,7 @@
 							<div
 								role="none"
 								class="flex items-center rounded-lg border p-4"
+								animate:flip
 								on:dragenter={(ev) => {
 									ev.preventDefault();
 									if (dragState) {

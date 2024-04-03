@@ -22,6 +22,13 @@
       "when": 1712102335992,
       "tag": "0002_serious_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1712112107252,
+      "tag": "0003_jazzy_excalibur",
+      "breakpoints": true
     }
   ]
 }

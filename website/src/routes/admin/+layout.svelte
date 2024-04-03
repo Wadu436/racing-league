@@ -3,6 +3,7 @@
 
 	const pages = [
 		{ name: 'Users', path: '/admin/users' },
+		{ name: 'Games', path: '/admin/games' },
 		{ name: 'Teams', path: '/admin/teams' },
 		{ name: 'Drivers', path: '/admin/drivers' },
 		{ name: 'Tracks', path: '/admin/tracks' },

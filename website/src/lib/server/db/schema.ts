@@ -64,11 +64,22 @@ export const teams = sqliteTable('teams', {
 	image_path: text('image_path')
 });
 
+export const games = sqliteTable('games', {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	image_path: text('image_path')
+});
+
 export const leagues = sqliteTable('leagues', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
-	status: text('status', { enum: ['upcoming', 'ongoing', 'finished'] }).notNull()
+	status: text('status', { enum: ['upcoming', 'ongoing', 'finished'] }).notNull(),
+	gameId: text('game_id').references(() => games.id)
 });
+
+export const leaguesRelations = relations(leagues, ({ one }) => ({
+	game: one(games, { fields: [leagues.gameId], references: [games.id] })
+}));
 
 export const events = sqliteTable('events', {
 	id: text('id').primaryKey(),

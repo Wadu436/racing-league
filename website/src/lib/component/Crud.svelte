@@ -2,18 +2,18 @@
 	type KeysOfType<T, U> = Extract<keyof T, { [K in keyof T]: T[K] extends U ? K : never }[keyof T]>;
 
 	type ColumnShapeString<T> = {
-		name: string & KeysOfType<T, string>;
+		name: string & KeysOfType<T, string|undefined>;
 		label: string;
 		type: 'string' | 'country';
 	};
 	type ColumnShapeBoolean<T> = {
-		name: string & KeysOfType<T, boolean>;
+		name: string & KeysOfType<T, boolean|undefined>;
 		label: string;
 		type: 'checkbox';
 	};
 	type ColumnShape<T> = ColumnShapeBoolean<T> | ColumnShapeString<T>;
 
-	type DataShape = { id: string } & Record<string, string | boolean | null>;
+	type DataShape = { id: string } & Record<string, string | boolean | null | undefined>;
 
 	export type CrudShape<T extends { id: string }> = {
 		columns: ColumnShape<T>[];
