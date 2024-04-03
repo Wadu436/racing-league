@@ -26,161 +26,80 @@
 <script lang="ts" generics="T extends DataShape">
 	import { countryCodeAlpha2Dict } from '$lib/flags/countryCodes';
 
-	import { enhance } from '$app/forms';
-
 	import { goto } from '$app/navigation';
 	import { CheckCircle2, PlusCircle, XCircle } from 'lucide-svelte';
 	import Flag from '$lib/flags/Flag.svelte';
-	import CountryPicker from './CountryPicker.svelte';
 
 	export let shape: CrudShape<T>;
 	export let baseUrl: string;
-	export let errorMessage: string | undefined;
 
-	// $: transformedColumns =
+	import * as Table from '$lib/components/ui/table';
+	import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
 </script>
 
 <div class="flex gap-2">
-	<nav class="table-container">
+	<nav class="table-container border-r px-4">
 		<div class="flex items-start">
-			<table class="table-interactive table">
-				<thead>
-					<tr>
+			<Table.Root>
+				<Table.Header>
+					<Table.Row>
 						{#each shape.columns as column}
-							<th>{column.label}</th>
+							<Table.Head>{column.label}</Table.Head>
 						{/each}
-					</tr>
-				</thead>
-				<tbody>
+					</Table.Row>
+				</Table.Header>
+
+				<Table.Body>
 					{#each shape.data as row}
-						<tr
+						<Table.Row
 							on:click={() => {
 								goto(`${baseUrl}${row.id}`);
 							}}
+							class="cursor-pointer"
+							data-state={shape.edit?.id === row.id ? 'selected' : undefined}
 						>
 							{#each shape.columns as column}
 								{@const value = row[column.name]}
 								{#if value != null && typeof value === 'string'}
 									{#if column.type === 'string'}
-										<td>{value}</td>
+										<Table.Cell>{value}</Table.Cell>
 									{:else if column.type === 'country'}
-										<td><Flag size="m" alpha2={value} /><span class="ml-2">{countryCodeAlpha2Dict[value]?.countryName}</span></td>
+										<Table.Cell
+											><Flag size="m" alpha2={value} /><span class="ml-2"
+												>{countryCodeAlpha2Dict[value]?.countryName ?? 'World'}</span
+											></Table.Cell
+										>
 									{:else}
-										<td></td>
+										<Table.Cell></Table.Cell>
 									{/if}
 								{:else if value != null && typeof value === 'boolean'}
 									{#if column.type === 'checkbox'}
-										<td>
+										<Table.Cell>
 											{#if value}
-												<CheckCircle2 class="text-success-800" />
+												<CheckCircle2 class="text-success" />
 											{:else}
-												<XCircle class="text-error-800" />
+												<XCircle class="text-destructive" />
 											{/if}
-										</td>
+										</Table.Cell>
 									{:else}
-										<td></td>
+										<Table.Cell></Table.Cell>
 									{/if}
 								{:else}
-									<td></td>
+									<Table.Cell></Table.Cell>
 								{/if}
 							{/each}
-						</tr>
+						</Table.Row>
 					{/each}
-				</tbody>
-			</table>
+				</Table.Body>
+			</Table.Root>
 			{#if shape.creatable}
-				<a href="{baseUrl}?create" class="btn mt-3"><PlusCircle /></a>
+				<a href="{baseUrl}?create" class="mt-3 pl-4"><PlusCircle /></a>
 			{/if}
 		</div>
 	</nav>
-	{#if (shape.creatable && shape.create) || shape.edit}
-		<div class="card min-w-96 h-fit flex-shrink-0 p-4">
-			{#if shape.creatable && shape.create}
-				<form method="post" action="?/create" use:enhance>
-					<div class="grid auto-rows-fr grid-cols-[auto_auto] items-center gap-x-4 gap-y-2">
-						{#each shape.columns as column}
-							<label for={column.name} class="label">{column.label}</label>
-							{#if column.type === 'string'}
-								<input id={column.name} name={column.name} class="input" type="text" value={''} />
-							{:else if column.type === 'country'}
-								<CountryPicker id={column.name} name={column.name} value={''}/>
-							{:else if column.type === 'checkbox'}
-								<!-- The == true is needed because Typescript is dumb -->
-								<input
-									id={column.name}
-									name={column.name}
-									class="checkbox"
-									type="checkbox"
-									checked={false}
-								/>
-							{/if}
-						{/each}
-					</div>
-					<div class="mt-2 flex items-center justify-between">
-						<div class="text-error-700 p-2">
-							{#if errorMessage}
-								{errorMessage}
-							{/if}
-						</div>
-						<div>
-							<button class="btn variant-filled" type="submit">Create</button>
-							<button class="btn variant-filled" type="submit" formaction="?/create_another"
-								>Create and add another</button
-							>
-						</div>
-					</div>
-				</form>
-			{:else if shape.edit}
-				<form
-					method="post"
-					action="?/save"
-					use:enhance={() =>
-						({ update }) =>
-							update({ reset: false })}
-				>
-					<div class="grid auto-rows-fr grid-cols-[auto_auto] items-center gap-x-4 gap-y-2">
-						{#each shape.columns as column}
-							<label for={column.name} class="label">{column.label}</label>
-							{#if column.type === 'string'}
-								<input
-									id={column.name}
-									name={column.name}
-									class="input"
-									type="text"
-									value={shape.edit[column.name]}
-								/>
-							{:else if column.type === 'country'}
-								<CountryPicker
-									id={column.name}
-									name={column.name}
-									value={shape.edit[column.name]?.toString()}
-								/>
-							{:else if column.type === 'checkbox'}
-								<!-- The == true is needed because Typescript is dumb -->
-								<input
-									id={column.name}
-									name={column.name}
-									class="checkbox"
-									type="checkbox"
-									checked={shape.edit[column.name] == true}
-								/>
-							{/if}
-						{/each}
-					</div>
-					<div class="mt-2 flex items-center justify-between">
-						<div class="text-error-700 p-2">
-							{#if errorMessage}
-								{errorMessage}
-							{/if}
-						</div>
-						<div>
-							<button class="btn variant-filled" type="submit">Save</button>
-						</div>
-					</div>
-				</form>
-			{/if}
-		</div>
-	{/if}
+	<div class="card min-w-96 h-fit flex-shrink-0 flex-grow p-4">
+		<slot name="form" />
+	</div>
 </div>
 
 <style>

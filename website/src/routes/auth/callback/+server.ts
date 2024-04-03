@@ -36,6 +36,8 @@ export const GET = async ({ url, cookies }) => {
 		error(400, "Invalid OAuth callback (invalid state)");
 	}
 
+	console.log('cookieState:', cookieState);
+
 	let redirect_to = cookieState.next ?? '/';
 	try {
 		const googleTokens = await googleAuth.validateAuthorizationCode(code, cookieState.codeVerifier);

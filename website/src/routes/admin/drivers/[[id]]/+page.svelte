@@ -1,10 +1,9 @@
 <script lang="ts">
 	import Crud from '$lib/component/Crud.svelte';
 	import type { PageData } from './$types';
-	import type { ActionData } from './$types';
+	import DriversForm from './drivers-form.svelte';
 
 	export let data: PageData;
-	export let form: ActionData;
 </script>
 
 <Crud
@@ -15,10 +14,14 @@
 			{ name: 'bot', label: 'Bot', type: 'checkbox' }
 		],
 		data: data.drivers,
-		edit: data.dbDriver,
 		creatable: true,
 		create: data.create
 	}}
 	baseUrl="/admin/drivers/"
-	errorMessage={form?.message}
-/>
+>
+	<div slot="form">
+		{#if data.form}
+			<DriversForm data={data.form} />
+		{/if}
+	</div>
+</Crud>

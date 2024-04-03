@@ -1,4 +1,5 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
+import { relations } from 'drizzle-orm';
 import { sqliteTable, text, integer, primaryKey, int, foreignKey } from 'drizzle-orm/sqlite-core';
 
 // Lucia Auth stuff
@@ -72,8 +73,8 @@ export const leagues = sqliteTable('leagues', {
 export const events = sqliteTable('events', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
-	league_order: int('league_order').notNull(),
-	date: int('date', { mode: 'timestamp' }).notNull(),
+	leagueOrder: int('league_order').notNull(),
+	date: int('date', { mode: 'timestamp' }),
 	leagueId: text('league_id')
 		.notNull()
 		.references(() => leagues.id, { onDelete: 'cascade' }),
@@ -82,9 +83,17 @@ export const events = sqliteTable('events', {
 		.references(() => tracks.id)
 });
 
+export const eventsRelations = relations(events, ({ one }) => ({
+	track: one(tracks, { fields: [events.trackId], references: [tracks.id] })
+}));
+
+export const tracksRelations = relations(tracks, ({ one }) => ({
+	events: one(events, { fields: [tracks.id], references: [events.trackId] })
+}));
+
 export const eventSessions = sqliteTable('event_sessions', {
 	id: text('id').primaryKey(),
-	event_id: text('event_id')
+	eventId: text('event_id')
 		.notNull()
 		.references(() => events.id, { onDelete: 'cascade' }),
 	session_type: text('session_type', {
@@ -159,19 +168,19 @@ export const laps = sqliteTable(
 			.references(() => drivers.id),
 		lap_number: int('lap_number').notNull(),
 		laptime_in_ms: int('laptime_in_ms').notNull(),
-		sector_1_time_in_ms: int('sector_1_time_in_ms').notNull(),
-		sector_2_time_in_ms: int('sector_2_time_in_ms').notNull(),
-		sector_3_time_in_ms: int('sector_3_time_in_ms').notNull(),
+		sector1TimeInMs: int('sector_1_time_in_ms').notNull(),
+		sector2TimeInMs: int('sector_2_time_in_ms').notNull(),
+		sector3TimeInMs: int('sector_3_time_in_ms').notNull(),
 		valid: integer('valid', { mode: 'boolean' }).notNull(),
-		in_lap: integer('in_lap', { mode: 'boolean' }).notNull(),
-		out_lap: integer('out_lap', { mode: 'boolean' }).notNull(),
-		safety_car: integer('safety_car', { mode: 'boolean' }).notNull(),
-		virtual_safety_car: integer('virtual_safety_car', { mode: 'boolean' }).notNull()
+		inLap: integer('in_lap', { mode: 'boolean' }).notNull(),
+		outLap: integer('out_lap', { mode: 'boolean' }).notNull(),
+		safetyCar: integer('safety_car', { mode: 'boolean' }).notNull(),
+		virtualSafetyCar: integer('virtual_safety_car', { mode: 'boolean' }).notNull()
 	},
 	(table) => {
 		return {
 			pk: primaryKey({ columns: [table.sessionId, table.driverId, table.lap_number] }),
-			session_entry_reference: foreignKey(() => ({
+			sessionEntryReference: foreignKey(() => ({
 				name: 'session_entry_reference',
 				columns: [table.sessionId, table.driverId],
 				foreignColumns: [sessionEntries.sessionId, sessionEntries.driverId]
@@ -191,8 +200,8 @@ export const tyreStints = sqliteTable(
 			.references(() => drivers.id),
 		order: int('order').notNull(),
 		compound: text('compound', { enum: ['soft', 'medium', 'hard', 'inter', 'wet'] }).notNull(),
-		start_lap: int('start_lap').notNull(),
-		end_lap: int('end_lap').notNull()
+		startLap: int('start_lap').notNull(),
+		endLap: int('end_lap').notNull()
 	},
 	(table) => {
 		return {
@@ -219,7 +228,7 @@ export const overtakes = sqliteTable(
 		overtakenDriverId: text('overtaken_driver_id')
 			.notNull()
 			.references(() => drivers.id),
-		lap_number: int('lap_number').notNull()
+		lapNumber: int('lap_number').notNull()
 	},
 	(table) => ({
 		overtakingSessionEntryReference: foreignKey(() => ({

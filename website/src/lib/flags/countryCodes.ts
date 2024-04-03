@@ -1,3 +1,5 @@
+import { picklist } from 'valibot';
+
 /**
  * A flag object
  */
@@ -224,7 +226,7 @@ export const countryCodeList: IFlagEntry[] = [
 		numeric: '659'
 	},
 	{
-		countryName: "North Korea",
+		countryName: 'North Korea',
 		alpha2: 'KP',
 		alpha3: 'PRK',
 		numeric: '408'
@@ -524,3 +526,8 @@ export const flagUrlFromAlpha2 = (alpha2?: string) => {
 		return `/flags/svg/WORLD.svg`;
 	}
 };
+
+export const CountrySchema = picklist(
+	countryCodeList.map((country) => country.alpha2),
+	'Please select your country.'
+);

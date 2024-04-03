@@ -6,13 +6,13 @@ import { googleAuth } from '$lib/server/oauth';
 import { generateCodeVerifier, generateState } from 'arctic';
 
 export const actions = {
-	google: async ({ url, cookies }) => {
+	google: async ({ request, cookies }) => {
+		const formData = await request.formData();
+		const next = formData.get("next")?.toString();
+
 		const state = generateState();
 		const codeVerifier = generateCodeVerifier();
 		const oauthUrl = await googleAuth.createAuthorizationURL(state, codeVerifier);
-
-		// Store state in a cookie
-		const next = url.searchParams.get('next');
 
 		const cookie: OauthStateCookie = { state, codeVerifier, provider: 'google' };
 		if (next != null) {
@@ -30,8 +30,11 @@ export const actions = {
 	}
 } satisfies Actions;
 
-export const load = (async ({ locals }) => {
+export const load = (async ({ url, locals }) => {
 	if (locals.session) {
 		return redirect(302, '/');
 	}
+	// Store state in a cookie
+	const next = url.searchParams.get('next');
+	return { next };
 }) satisfies PageServerLoad;

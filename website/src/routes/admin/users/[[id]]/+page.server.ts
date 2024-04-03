@@ -2,63 +2,95 @@ import { db } from '$lib/server/db/db';
 import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 import { users } from '$lib/server/db/schema';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
+import type { Actions } from './$types';
+import { randomUUID } from 'crypto';
+import { message, superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import { formSchema } from './schema';
 
-export const load: PageServerLoad = async ({ params }) => {
-	const data = { users: await db.query.users.findMany() };
+// Define outside the load function so the adapter can be cached
+
+export const load: PageServerLoad = async ({ params, url }) => {
+	const create = url.searchParams.get('create') != undefined;
+	const data = { users: await db.query.users.findMany(), create };
 
 	if (params.id) {
-		const dbUser = await db.query.users.findFirst({ where: eq(users.id, params.id) });
-		if (!dbUser) {
+		const dbTeam = await db.query.users.findFirst({ where: eq(users.id, params.id) });
+		if (!dbTeam) {
 			error(404);
 		}
+
+		const form = await superValidate(dbTeam, valibot(formSchema));
+
 		return {
-			dbUser,
+			form,
 			...data
 		};
+	} else if (create) {
+		const form = await superValidate(valibot(formSchema));
+		return {
+			form,
+			...data
+		};
+	} else {
+		return data;
 	}
-
-	return data;
 };
 
-import type { Actions } from './$types';
-
 export const actions = {
-	save: async ({ request, params, locals }) => {
-		if(!locals.user) {
-			return fail(401);
+	save: async ({ request, params }) => {
+		const form = await superValidate(request, valibot(formSchema));
+
+		if (!form.valid) {
+			// Again, return { form } and things will just work.
+			return fail(400, { form });
 		}
-		if(!params.id) {
-			return fail(404);
-		}
-		const existingUser = await db.query.users.findFirst({ where: eq(users.id, params.id) });
-		if(!existingUser) {
-			return fail(404);
-		}
-		if (existingUser) {
-			const formData = await request.formData();
 
-			const username = formData.get('username')?.toString();
-			if (!username) {
-				return fail(400, { message: 'Username is required' });
-			}
+		console.log("form", form);
 
-			const admin = formData.get('admin') === 'on';
-			const staff = formData.get('staff') === 'on';
+		const id = params.id;
 
-			// Check if this user is allowed to make this edit
-			locals.user.admin;
-
+		if (id) {
+			// Save the entry
+			// TODO: Do something with the validated form.data
 			const result = await db
 				.update(users)
-				.set({ username, admin, staff })
-				.where(eq(users.id, params.id));
+				.set({ username: form.data.username, admin: form.data.admin, staff: form.data.staff })
+				.where(eq(users.id, id));
 
 			if (result.changes === 0) {
-				return fail(400, { message: "User wasn't found in the database" });
+				return message(form, "User wasn't found in the database", { status: 404 });
 			}
+		} else {
+			// Create an entry
+			const id = randomUUID();
 
-			return;
+			try {
+				await db
+					.insert(users)
+					.values({
+						id,
+						username: form.data.username,
+						admin: form.data.admin,
+						staff: form.data.staff
+					});
+			} catch (e) {
+				return fail(400, { message: 'There was a database error' });
+			}
 		}
-	}
+
+		// Yep, return { form } here too
+		return message(form, 'Saved');
+	},
+	// delete: async ({ params }) => {
+	// 	const id = params.id;
+	// 	if (!id) {
+	// 		return fail(404);
+	// 	}
+
+	// 	await db.delete(users).where(eq(users.id, id));
+
+	// 	redirect(307, '/admin/drivers');
+	// }
 } satisfies Actions;

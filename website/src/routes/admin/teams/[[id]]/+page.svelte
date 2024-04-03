@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import Crud from '$lib/component/Crud.svelte';
 	import type { PageData } from './$types';
 	import type { ActionData } from './$types';
-	import { CheckCircle2, XCircle, PlusCircle } from 'lucide-svelte';
+	import TeamsForm from './teams-form.svelte';
 
 	export let data: PageData;
-	export let form: ActionData;
 </script>
 
 <Crud
@@ -17,10 +14,13 @@
 			{ name: 'country', label: 'Country', type: 'country' }
 		],
 		data: data.teams,
-		edit: data.dbTeam,
 		creatable: true,
 		create: data.create
 	}}
 	baseUrl="/admin/teams/"
-	errorMessage={form?.message}
-/>
+	><div slot="form">
+		{#if data.form}
+			<TeamsForm data={data.form} />
+		{/if}
+	</div>
+</Crud>

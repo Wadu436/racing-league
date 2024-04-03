@@ -5,9 +5,9 @@
 	import type { PageData } from './$types';
 	import type { ActionData } from './$types';
 	import { CheckCircle2, XCircle } from 'lucide-svelte';
+	import UsersForm from './users-form.svelte';
 
 	export let data: PageData;
-	export let form: ActionData;
 </script>
 
 <Crud
@@ -17,9 +17,13 @@
 			{ name: 'admin', label: 'Admin', type: 'checkbox' },
 			{ name: 'staff', label: 'Staff', type: 'checkbox' }
 		],
-		data: data.users,
-		edit: data.dbUser
+		data: data.users
 	}}
 	baseUrl="/admin/users/"
-	errorMessage={form?.message}
-/>
+>
+	<div slot="form">
+		{#if data.form}
+			<UsersForm data={data.form} />
+		{/if}
+	</div>
+</Crud>
