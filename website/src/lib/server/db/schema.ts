@@ -77,52 +77,6 @@ export const leagues = sqliteTable('leagues', {
 	gameId: text('game_id').references(() => games.id)
 });
 
-export const leaguesRelations = relations(leagues, ({ one }) => ({
-	game: one(games, { fields: [leagues.gameId], references: [games.id] })
-}));
-
-export const events = sqliteTable('events', {
-	id: text('id').primaryKey(),
-	name: text('name').notNull(),
-	leagueOrder: int('league_order').notNull(),
-	date: int('date', { mode: 'timestamp' }),
-	leagueId: text('league_id')
-		.notNull()
-		.references(() => leagues.id, { onDelete: 'cascade' }),
-	trackId: text('track_id')
-		.notNull()
-		.references(() => tracks.id)
-});
-
-export const eventsRelations = relations(events, ({ one }) => ({
-	track: one(tracks, { fields: [events.trackId], references: [tracks.id] })
-}));
-
-export const tracksRelations = relations(tracks, ({ one }) => ({
-	events: one(events, { fields: [tracks.id], references: [events.trackId] })
-}));
-
-export const eventSessions = sqliteTable('event_sessions', {
-	id: text('id').primaryKey(),
-	eventId: text('event_id')
-		.notNull()
-		.references(() => events.id, { onDelete: 'cascade' }),
-	session_type: text('session_type', {
-		enum: [
-			'Race',
-			'Q1',
-			'Q2',
-			'Q3',
-			'ShortQualifying',
-			'OneShotQualifying',
-			'Sprint',
-			'SprintQualifying',
-			'Practice'
-		]
-	}).notNull(),
-	fastest_lap: integer('fastest_lap').references(() => drivers.id)
-});
-
 export const leagueEntries = sqliteTable(
 	'league_entries',
 	{
@@ -141,32 +95,100 @@ export const leagueEntries = sqliteTable(
 	}
 );
 
-export const sessionEntries = sqliteTable(
-	'session_entries',
+export const events = sqliteTable('events', {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	leagueOrder: int('league_order').notNull(),
+	date: int('date', { mode: 'timestamp' }),
+	leagueId: text('league_id')
+		.notNull()
+		.references(() => leagues.id, { onDelete: 'cascade' }),
+	trackId: text('track_id')
+		.notNull()
+		.references(() => tracks.id)
+});
+
+export const eventEntries = sqliteTable(
+	'event_entries',
 	{
-		sessionId: text('session_id')
+		eventId: text('session_id')
 			.notNull()
-			.references(() => sessions.id, { onDelete: 'cascade' }),
+			.references(() => events.id, { onDelete: 'cascade' }),
 		driverId: text('driver_id')
 			.notNull()
 			.references(() => drivers.id),
 		teamId: text('team_id')
 			.notNull()
-			.references(() => teams.id),
-		finish_status: text('finish_status', {
-			enum: ['Finished', 'DNF', 'DNS', 'DSQ', 'DNQ']
-		}).notNull(),
-		grid_position: int('grid_position').notNull(),
-		finish_position: int('finish_position').notNull(),
-		total_time_without_penalties_in_ms: int('total_time_without_penalties_in_ms').notNull(),
-		penalty_time_in_seconds: int('penalty_time_in_s').notNull()
+			.references(() => teams.id)
 	},
 	(table) => {
 		return {
-			pk: primaryKey({ columns: [table.sessionId, table.driverId] })
+			pk: primaryKey({ columns: [table.eventId, table.driverId] })
 		};
 	}
 );
+
+export const eventSessions = sqliteTable('event_sessions', {
+	id: text('id').primaryKey(),
+	eventId: text('event_id')
+		.notNull()
+		.references(() => events.id, { onDelete: 'cascade' }),
+	sessionType: text('session_type', {
+		enum: [
+			'Race',
+			'Q1',
+			'Q2',
+			'Q3',
+			'ShortQualifying',
+			'OneShotQualifying',
+			'Sprint',
+			'SprintQualifying',
+			'Practice'
+		]
+	}).notNull()
+});
+
+export const practiceSessionsEntries = sqliteTable('practice_sessions_entries', {
+	sessionId: text('session_id')
+		.notNull()
+		.references(() => eventSessions.id, { onDelete: 'cascade' }),
+	driverId: text('driver_id')
+		.notNull()
+		.references(() => drivers.id),
+	teamId: text('team_id')
+		.notNull()
+		.references(() => teams.id),
+	fastestLap: int('fastest_lap').notNull()
+});
+
+export const qualifyingSessionsEntries = sqliteTable('practice_sessions_entries', {
+	sessionId: text('session_id')
+		.notNull()
+		.references(() => eventSessions.id, { onDelete: 'cascade' }),
+	driverId: text('driver_id')
+		.notNull()
+		.references(() => drivers.id),
+	teamId: text('team_id')
+		.notNull()
+		.references(() => teams.id),
+	grid_penalty: int('grid_penalty').notNull().default(0),
+	fastestLap: int('fastest_lap').notNull()
+});
+
+export const qualifyingSessions = sqliteTable('qualifying_sessions', {});
+
+export const raceSessions = sqliteTable('race_sessions', {
+	id: text('id').primaryKey(),
+	eventId: text('event_id')
+		.notNull()
+		.references(() => events.id, { onDelete: 'cascade' }),
+	sessionType: text('session_type', {
+		enum: ['Race', 'Sprint']
+	}).notNull(),
+	fastestLap: integer('fastest_lap').references(() => drivers.id)
+});
+
+export const raceEntries = sqliteTable('race_entries', {});
 
 export const laps = sqliteTable(
 	'laps',
@@ -254,3 +276,23 @@ export const overtakes = sqliteTable(
 		}))
 	})
 );
+
+// Relations
+export const leaguesRelations = relations(leagues, ({ one, many }) => ({
+	game: one(games, { fields: [leagues.gameId], references: [games.id] }),
+	events: many(events)
+}));
+
+export const eventsRelations = relations(events, ({ one, many }) => ({
+	track: one(tracks, { fields: [events.trackId], references: [tracks.id] }),
+	league: one(leagues, { fields: [events.leagueId], references: [leagues.id] }),
+	sessions: many(eventSessions)
+}));
+
+export const tracksRelations = relations(tracks, ({ one }) => ({
+	events: one(events, { fields: [tracks.id], references: [events.trackId] })
+}));
+
+export const eventSessionsRelations = relations(eventSessions, ({ one }) => ({
+	event: one(events, { fields: [eventSessions.eventId], references: [events.id] })
+}));

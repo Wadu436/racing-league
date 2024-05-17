@@ -61,7 +61,6 @@ export const actions = {
 		// Check if the game exists
 		if (form.data.gameId) {
 			const game = await db.query.games.findFirst({ where: eq(games.id, form.data.gameId) });
-			console.log(game);
 			if (!game) {
 				return setError(form, 'gameId', 'Game not found');
 			}

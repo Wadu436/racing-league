@@ -13,10 +13,10 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import dayjs from 'dayjs';
-	import { GripVertical } from 'lucide-svelte';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { enhance as kitEnhance } from '$app/forms';
-	import { flip } from 'svelte/animate';
+
+	import ReorderList from '$lib/components/reorder-list.svelte';
 
 	export let data;
 	export let form;
@@ -39,22 +39,9 @@
 			}
 		: undefined;
 
-	function reinsertElementAt<T extends { id: string }>(arr: T[], id: string, idx: number) {
-		const itemIndex = arr.findIndex((e) => e.id === id);
-		if (itemIndex === -1) return arr;
-
-		const item = arr[itemIndex];
-		const newArray = arr.toSpliced(itemIndex, 1);
-		newArray.splice(idx, 0, item);
-
-		return newArray;
-	}
-
 	function compareArrays<T extends { id: string }>(a: T[], b: T[]): boolean {
 		return a.length === b.length && a.every((el, i) => el.id === b[i].id);
 	}
-
-	let dropzoneDiv: HTMLDivElement | null = null;
 
 	let draggableEvents: typeof data.events = [...data.events];
 	$: draggableEventsSorted = draggableEvents.toSorted((a, b) => {
@@ -68,28 +55,19 @@
 			return 0;
 		}
 	});
-	$: console.log('data.events:', data.events);
-	$: console.log('draggableEvents:', draggableEvents);
-	$: console.log('draggableEventsSorted:', draggableEventsSorted);
 
-	let dragState: {
-		id: string;
-		dragCounter: number;
-		eventsBeforeDrag: typeof data.events;
-	} | null = null;
 	$: eventsTainted = !compareArrays(data.events, draggableEvents);
-	$: console.log('tainted:', eventsTainted);
 </script>
 
 <div class="mx-4">
-	<nav class="">
+	<nav>
 		<div class="text-xl font-bold">{data.league.name}</div>
 	</nav>
 
 	<Separator class="my-4" />
 
 	<div>
-		<div class="flex gap-4">
+		<div class="gap-4 md:flex">
 			<div>
 				<div class="text-lg font-bold">League Info</div>
 				<div>
@@ -182,99 +160,28 @@
 							<div>{form?.reorderMessage}</div>
 						{/if}
 					</div>
-					<div
-						bind:this={dropzoneDiv}
-						class="grid gap-2"
-						role="none"
-						on:dragleave={(ev) => {
-							if (dragState) {
-								ev.preventDefault();
-								dragState.dragCounter--;
-
-								if (dragState.dragCounter === 0) {
-									draggableEvents = dragState.eventsBeforeDrag;
-								}
-							}
-						}}
-						on:dragenter={(ev) => {
-							if (dragState) {
-								ev.preventDefault();
-								dragState.dragCounter++;
-							}
-						}}
-					>
-						{#each draggableEvents as event, i (event.id)}
-							<div
-								role="none"
-								class="flex items-center rounded-lg border p-4"
-								animate:flip
-								on:dragenter={(ev) => {
-									ev.preventDefault();
-									if (dragState) {
-										if (dragState.id === event.id) {
-											return;
-										}
-										const newEvents = reinsertElementAt(draggableEvents, dragState.id, i);
-										draggableEvents = newEvents;
-									}
-								}}
-								on:dragover={(ev) => {
-									ev.preventDefault();
-								}}
-								on:drop={(ev) => {
-									ev.preventDefault();
-								}}
-							>
-								<div
-									class="mr-2 cursor-pointer"
-									role="none"
-									draggable="true"
-									on:dragstart={(ev) => {
-										if (
-											ev.dataTransfer &&
-											ev.target &&
-											ev.target instanceof HTMLElement &&
-											ev.target.parentElement
-										) {
-											const rect = ev.target.getBoundingClientRect();
-											ev.dataTransfer.setDragImage(
-												ev.target.parentElement,
-												ev.target.offsetWidth + ev.clientX - rect.left,
-												ev.target.offsetHeight + ev.clientY - rect.top
-											);
-											ev.dataTransfer.dropEffect = 'move';
-											dragState = {
-												id: event.id,
-												dragCounter: 0,
-												eventsBeforeDrag: [...draggableEvents]
-											};
-										}
-									}}
-									on:dragend={() => {
-										dragState = null;
-									}}
-								>
-									<GripVertical />
-								</div>
+					<div>
+						<ReorderList bind:items={draggableEvents}>
+							<div slot="item" let:item={event} let:i class="select-none1">
 								<a href="/admin/events/{event.id}" class="flex flex-1 justify-between gap-8">
-									<div>
+									<div class="min-w-0 items-center overflow-hidden text-ellipsis whitespace-nowrap">
 										<span class="font-bold">{event.name}</span>
 										<span> - </span>
 										<span>{event.track.name}</span>
 									</div>
-									<span>{event.date ? dayjs(event.date).format('MMMM D, YYYY HH:mm') : 'TBD'}</span>
+									<span class="min-w-fit"
+										>{event.date ? dayjs(event.date).format('MMMM D, YYYY HH:mm') : 'TBD'}</span
+									>
 								</a>
 								<input id={event.id} name={event.id} value={i} type="hidden" />
 							</div>
-						{:else}
-							<p>No events</p>
-						{/each}
+						</ReorderList>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
-
-	<style>
-	</style>
 </div>
+
+<style>
+</style>
