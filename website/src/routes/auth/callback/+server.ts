@@ -36,9 +36,8 @@ export const GET = async ({ url, cookies }) => {
 		error(400, "Invalid OAuth callback (invalid state)");
 	}
 
-	console.log('cookieState:', cookieState);
-
-	let redirect_to = cookieState.next ?? '/';
+	// If cookieState.next is undefind, null, or empty string, redirect to the home page
+	let redirect_to = cookieState.next ? cookieState.next : '/';
 	try {
 		const googleTokens = await googleAuth.validateAuthorizationCode(code, cookieState.codeVerifier);
 		const googleUser = parse(GoogleUserSchema, parseJWT(googleTokens.idToken)!.payload);
@@ -79,7 +78,7 @@ export const GET = async ({ url, cookies }) => {
 	} catch (e) {
 		if (e instanceof OAuth2RequestError) {
 			// invalid code
-			console.error("OAuth2 error:",e);
+			console.error("OAuth2 error:", e);
 			error(400, "Invalid OAuth callback (OAuth2 error)");
 		}
 

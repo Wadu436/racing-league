@@ -8,11 +8,14 @@ import { generateCodeVerifier, generateState } from 'arctic';
 export const actions = {
 	google: async ({ request, cookies }) => {
 		const formData = await request.formData();
+		console.log(`formData.get("next")`, formData.get("next"));
 		const next = formData.get("next")?.toString();
 
 		const state = generateState();
 		const codeVerifier = generateCodeVerifier();
 		const oauthUrl = await googleAuth.createAuthorizationURL(state, codeVerifier);
+
+		console.log("next:", next);
 
 		const cookie: OauthStateCookie = { state, codeVerifier, provider: 'google' };
 		if (next != null) {
@@ -36,5 +39,6 @@ export const load = (async ({ url, locals }) => {
 	}
 	// Store state in a cookie
 	const next = url.searchParams.get('next');
+	console.log("next:", next);
 	return { next };
 }) satisfies PageServerLoad;
