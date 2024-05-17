@@ -4,7 +4,8 @@ import type { Config } from 'drizzle-kit';
 export default {
 	schema: './src/lib/server/db/schema.ts',
 	out: './drizzle',
-	driver: 'better-sqlite', // 'pg' | 'mysql2' | 'better-sqlite' | 'libsql' | 'turso'
+	dialect: 'sqlite',
+	// driver: 'better-sqlite', // 'pg' | 'mysql2' | 'better-sqlite' | 'libsql' | 'turso'
 	dbCredentials: {
 		url: './drizzle.db' // 👈 this could also be a path to the local sqlite file
 	}

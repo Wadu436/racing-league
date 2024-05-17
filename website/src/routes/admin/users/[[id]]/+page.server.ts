@@ -47,7 +47,7 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		console.log("form", form);
+		console.log('form', form);
 
 		const id = params.id;
 
@@ -67,14 +67,12 @@ export const actions = {
 			const id = randomUUID();
 
 			try {
-				await db
-					.insert(users)
-					.values({
-						id,
-						username: form.data.username,
-						admin: form.data.admin,
-						staff: form.data.staff
-					});
+				await db.insert(users).values({
+					id,
+					username: form.data.username,
+					admin: form.data.admin,
+					staff: form.data.staff
+				});
 			} catch (e) {
 				return fail(400, { message: 'There was a database error' });
 			}
@@ -82,7 +80,7 @@ export const actions = {
 
 		// Yep, return { form } here too
 		return message(form, 'Saved');
-	},
+	}
 	// delete: async ({ params }) => {
 	// 	const id = params.id;
 	// 	if (!id) {

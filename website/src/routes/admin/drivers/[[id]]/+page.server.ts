@@ -77,14 +77,14 @@ export const actions = {
 		// Yep, return { form } here too
 		return message(form, 'Saved');
 	},
-	delete: async({params}) => {
+	delete: async ({ params }) => {
 		const id = params.id;
-		if(!id) {
+		if (!id) {
 			return fail(404);
 		}
 
 		await db.delete(drivers).where(eq(drivers.id, id));
 
-		redirect(307, "/admin/drivers");
+		redirect(307, '/admin/drivers');
 	}
 } satisfies Actions;

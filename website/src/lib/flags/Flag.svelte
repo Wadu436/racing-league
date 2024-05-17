@@ -18,8 +18,8 @@
 </script>
 
 <img
-	class="h-auto inline-block"
+	class="inline-block h-auto"
 	src={flagUrlFromAlpha2(alpha2)}
 	alt="Flag of {countryCodeAlpha2Dict[alpha2]?.countryName}"
-	width="{pixels}"
+	width={pixels}
 />

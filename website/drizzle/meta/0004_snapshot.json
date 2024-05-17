@@ -1,1092 +1,966 @@
 {
-  "version": "5",
-  "dialect": "sqlite",
-  "id": "55ea483b-ce08-4130-84b0-3e0301753927",
-  "prevId": "1495eb8a-cb79-4cd8-b86c-56e1470386c9",
-  "tables": {
-    "drivers": {
-      "name": "drivers",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "bot": {
-          "name": "bot",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "country": {
-          "name": "country",
-          "type": "text(2)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "drivers_name_unique": {
-          "name": "drivers_name_unique",
-          "columns": [
-            "name"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "event_sessions": {
-      "name": "event_sessions",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "event_id": {
-          "name": "event_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "event_order": {
-          "name": "event_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "session_type": {
-          "name": "session_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "fastest_lap": {
-          "name": "fastest_lap",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "event_sessions_event_id_events_id_fk": {
-          "name": "event_sessions_event_id_events_id_fk",
-          "tableFrom": "event_sessions",
-          "tableTo": "events",
-          "columnsFrom": [
-            "event_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "event_sessions_fastest_lap_drivers_id_fk": {
-          "name": "event_sessions_fastest_lap_drivers_id_fk",
-          "tableFrom": "event_sessions",
-          "tableTo": "drivers",
-          "columnsFrom": [
-            "fastest_lap"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "events": {
-      "name": "events",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "league_order": {
-          "name": "league_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "date": {
-          "name": "date",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "league_id": {
-          "name": "league_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "track_id": {
-          "name": "track_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "events_league_id_leagues_id_fk": {
-          "name": "events_league_id_leagues_id_fk",
-          "tableFrom": "events",
-          "tableTo": "leagues",
-          "columnsFrom": [
-            "league_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "events_track_id_tracks_id_fk": {
-          "name": "events_track_id_tracks_id_fk",
-          "tableFrom": "events",
-          "tableTo": "tracks",
-          "columnsFrom": [
-            "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "games": {
-      "name": "games",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "image_path": {
-          "name": "image_path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "laps": {
-      "name": "laps",
-      "columns": {
-        "session_id": {
-          "name": "session_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "driver_id": {
-          "name": "driver_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "lap_number": {
-          "name": "lap_number",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "laptime_in_ms": {
-          "name": "laptime_in_ms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "sector_1_time_in_ms": {
-          "name": "sector_1_time_in_ms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "sector_2_time_in_ms": {
-          "name": "sector_2_time_in_ms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "sector_3_time_in_ms": {
-          "name": "sector_3_time_in_ms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "valid": {
-          "name": "valid",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "in_lap": {
-          "name": "in_lap",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "out_lap": {
-          "name": "out_lap",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "safety_car": {
-          "name": "safety_car",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "virtual_safety_car": {
-          "name": "virtual_safety_car",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "laps_session_id_sessions_id_fk": {
-          "name": "laps_session_id_sessions_id_fk",
-          "tableFrom": "laps",
-          "tableTo": "sessions",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "laps_driver_id_drivers_id_fk": {
-          "name": "laps_driver_id_drivers_id_fk",
-          "tableFrom": "laps",
-          "tableTo": "drivers",
-          "columnsFrom": [
-            "driver_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "session_entry_reference": {
-          "name": "session_entry_reference",
-          "tableFrom": "laps",
-          "tableTo": "session_entries",
-          "columnsFrom": [
-            "session_id",
-            "driver_id"
-          ],
-          "columnsTo": [
-            "session_id",
-            "driver_id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "laps_session_id_driver_id_lap_number_pk": {
-          "columns": [
-            "driver_id",
-            "lap_number",
-            "session_id"
-          ],
-          "name": "laps_session_id_driver_id_lap_number_pk"
-        }
-      },
-      "uniqueConstraints": {}
-    },
-    "league_entries": {
-      "name": "league_entries",
-      "columns": {
-        "league_id": {
-          "name": "league_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "driver_id": {
-          "name": "driver_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "team_id": {
-          "name": "team_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "league_entries_league_id_leagues_id_fk": {
-          "name": "league_entries_league_id_leagues_id_fk",
-          "tableFrom": "league_entries",
-          "tableTo": "leagues",
-          "columnsFrom": [
-            "league_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "league_entries_driver_id_drivers_id_fk": {
-          "name": "league_entries_driver_id_drivers_id_fk",
-          "tableFrom": "league_entries",
-          "tableTo": "drivers",
-          "columnsFrom": [
-            "driver_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "league_entries_team_id_teams_id_fk": {
-          "name": "league_entries_team_id_teams_id_fk",
-          "tableFrom": "league_entries",
-          "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "league_entries_league_id_driver_id_pk": {
-          "columns": [
-            "driver_id",
-            "league_id"
-          ],
-          "name": "league_entries_league_id_driver_id_pk"
-        }
-      },
-      "uniqueConstraints": {}
-    },
-    "leagues": {
-      "name": "leagues",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "game_id": {
-          "name": "game_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "leagues_game_id_games_id_fk": {
-          "name": "leagues_game_id_games_id_fk",
-          "tableFrom": "leagues",
-          "tableTo": "games",
-          "columnsFrom": [
-            "game_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "new_users": {
-      "name": "new_users",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "provider_id": {
-          "name": "provider_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "provider_user_id": {
-          "name": "provider_user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "expiration_time": {
-          "name": "expiration_time",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "oauth_accounts": {
-      "name": "oauth_accounts",
-      "columns": {
-        "provider_id": {
-          "name": "provider_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "provider_user_id": {
-          "name": "provider_user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "oauth_accounts_user_id_users_id_fk": {
-          "name": "oauth_accounts_user_id_users_id_fk",
-          "tableFrom": "oauth_accounts",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "oauth_accounts_provider_id_provider_user_id_pk": {
-          "columns": [
-            "provider_id",
-            "provider_user_id"
-          ],
-          "name": "oauth_accounts_provider_id_provider_user_id_pk"
-        }
-      },
-      "uniqueConstraints": {}
-    },
-    "overtakes": {
-      "name": "overtakes",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "session_id": {
-          "name": "session_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "overtaking_driver_id": {
-          "name": "overtaking_driver_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "overtaken_driver_id": {
-          "name": "overtaken_driver_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "lap_number": {
-          "name": "lap_number",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "overtakes_session_id_sessions_id_fk": {
-          "name": "overtakes_session_id_sessions_id_fk",
-          "tableFrom": "overtakes",
-          "tableTo": "sessions",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "overtakes_overtaking_driver_id_drivers_id_fk": {
-          "name": "overtakes_overtaking_driver_id_drivers_id_fk",
-          "tableFrom": "overtakes",
-          "tableTo": "drivers",
-          "columnsFrom": [
-            "overtaking_driver_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "overtakes_overtaken_driver_id_drivers_id_fk": {
-          "name": "overtakes_overtaken_driver_id_drivers_id_fk",
-          "tableFrom": "overtakes",
-          "tableTo": "drivers",
-          "columnsFrom": [
-            "overtaken_driver_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "overtaking_session_entry_reference": {
-          "name": "overtaking_session_entry_reference",
-          "tableFrom": "overtakes",
-          "tableTo": "session_entries",
-          "columnsFrom": [
-            "session_id",
-            "overtaking_driver_id"
-          ],
-          "columnsTo": [
-            "session_id",
-            "driver_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "overtaken_session_entry_reference": {
-          "name": "overtaken_session_entry_reference",
-          "tableFrom": "overtakes",
-          "tableTo": "session_entries",
-          "columnsFrom": [
-            "session_id",
-            "overtaken_driver_id"
-          ],
-          "columnsTo": [
-            "session_id",
-            "driver_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "session_entries": {
-      "name": "session_entries",
-      "columns": {
-        "session_id": {
-          "name": "session_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "driver_id": {
-          "name": "driver_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "team_id": {
-          "name": "team_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "finish_status": {
-          "name": "finish_status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "grid_position": {
-          "name": "grid_position",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "finish_position": {
-          "name": "finish_position",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "total_time_without_penalties_in_ms": {
-          "name": "total_time_without_penalties_in_ms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "penalty_time_in_s": {
-          "name": "penalty_time_in_s",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "session_entries_session_id_sessions_id_fk": {
-          "name": "session_entries_session_id_sessions_id_fk",
-          "tableFrom": "session_entries",
-          "tableTo": "sessions",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "session_entries_driver_id_drivers_id_fk": {
-          "name": "session_entries_driver_id_drivers_id_fk",
-          "tableFrom": "session_entries",
-          "tableTo": "drivers",
-          "columnsFrom": [
-            "driver_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "session_entries_team_id_teams_id_fk": {
-          "name": "session_entries_team_id_teams_id_fk",
-          "tableFrom": "session_entries",
-          "tableTo": "teams",
-          "columnsFrom": [
-            "team_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "session_entries_session_id_driver_id_pk": {
-          "columns": [
-            "driver_id",
-            "session_id"
-          ],
-          "name": "session_entries_session_id_driver_id_pk"
-        }
-      },
-      "uniqueConstraints": {}
-    },
-    "sessions": {
-      "name": "sessions",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "expires_at": {
-          "name": "expires_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "sessions_user_id_users_id_fk": {
-          "name": "sessions_user_id_users_id_fk",
-          "tableFrom": "sessions",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "teams": {
-      "name": "teams",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "country": {
-          "name": "country",
-          "type": "text(2)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "image_path": {
-          "name": "image_path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "tracks": {
-      "name": "tracks",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "country": {
-          "name": "country",
-          "type": "text(2)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "image_path": {
-          "name": "image_path",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "tyre_stints": {
-      "name": "tyre_stints",
-      "columns": {
-        "session_id": {
-          "name": "session_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "driver_id": {
-          "name": "driver_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "order": {
-          "name": "order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "compound": {
-          "name": "compound",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "start_lap": {
-          "name": "start_lap",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "end_lap": {
-          "name": "end_lap",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "tyre_stints_session_id_sessions_id_fk": {
-          "name": "tyre_stints_session_id_sessions_id_fk",
-          "tableFrom": "tyre_stints",
-          "tableTo": "sessions",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "tyre_stints_driver_id_drivers_id_fk": {
-          "name": "tyre_stints_driver_id_drivers_id_fk",
-          "tableFrom": "tyre_stints",
-          "tableTo": "drivers",
-          "columnsFrom": [
-            "driver_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "session_entry_reference": {
-          "name": "session_entry_reference",
-          "tableFrom": "tyre_stints",
-          "tableTo": "session_entries",
-          "columnsFrom": [
-            "session_id",
-            "driver_id"
-          ],
-          "columnsTo": [
-            "session_id",
-            "driver_id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "tyre_stints_session_id_driver_id_order_pk": {
-          "columns": [
-            "driver_id",
-            "order",
-            "session_id"
-          ],
-          "name": "tyre_stints_session_id_driver_id_order_pk"
-        }
-      },
-      "uniqueConstraints": {}
-    },
-    "users": {
-      "name": "users",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "admin": {
-          "name": "admin",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "staff": {
-          "name": "staff",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "users_username_unique": {
-          "name": "users_username_unique",
-          "columns": [
-            "username"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    }
-  },
-  "enums": {},
-  "_meta": {
-    "schemas": {},
-    "tables": {},
-    "columns": {}
-  }
+	"version": "6",
+	"dialect": "sqlite",
+	"tables": {
+		"drivers": {
+			"name": "drivers",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"bot": {
+					"name": "bot",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"country": {
+					"name": "country",
+					"type": "text(2)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"drivers_name_unique": {
+					"name": "drivers_name_unique",
+					"columns": ["name"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"event_sessions": {
+			"name": "event_sessions",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"event_id": {
+					"name": "event_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"event_order": {
+					"name": "event_order",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"session_type": {
+					"name": "session_type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"fastest_lap": {
+					"name": "fastest_lap",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"event_sessions_event_id_events_id_fk": {
+					"name": "event_sessions_event_id_events_id_fk",
+					"tableFrom": "event_sessions",
+					"columnsFrom": ["event_id"],
+					"tableTo": "events",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				},
+				"event_sessions_fastest_lap_drivers_id_fk": {
+					"name": "event_sessions_fastest_lap_drivers_id_fk",
+					"tableFrom": "event_sessions",
+					"columnsFrom": ["fastest_lap"],
+					"tableTo": "drivers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"events": {
+			"name": "events",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"league_order": {
+					"name": "league_order",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"date": {
+					"name": "date",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"league_id": {
+					"name": "league_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"track_id": {
+					"name": "track_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"events_league_id_leagues_id_fk": {
+					"name": "events_league_id_leagues_id_fk",
+					"tableFrom": "events",
+					"columnsFrom": ["league_id"],
+					"tableTo": "leagues",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				},
+				"events_track_id_tracks_id_fk": {
+					"name": "events_track_id_tracks_id_fk",
+					"tableFrom": "events",
+					"columnsFrom": ["track_id"],
+					"tableTo": "tracks",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"games": {
+			"name": "games",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"image_path": {
+					"name": "image_path",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"laps": {
+			"name": "laps",
+			"columns": {
+				"session_id": {
+					"name": "session_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"driver_id": {
+					"name": "driver_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"lap_number": {
+					"name": "lap_number",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"laptime_in_ms": {
+					"name": "laptime_in_ms",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"sector_1_time_in_ms": {
+					"name": "sector_1_time_in_ms",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"sector_2_time_in_ms": {
+					"name": "sector_2_time_in_ms",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"sector_3_time_in_ms": {
+					"name": "sector_3_time_in_ms",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"valid": {
+					"name": "valid",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"in_lap": {
+					"name": "in_lap",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"out_lap": {
+					"name": "out_lap",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"safety_car": {
+					"name": "safety_car",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"virtual_safety_car": {
+					"name": "virtual_safety_car",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"laps_session_id_sessions_id_fk": {
+					"name": "laps_session_id_sessions_id_fk",
+					"tableFrom": "laps",
+					"columnsFrom": ["session_id"],
+					"tableTo": "sessions",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"laps_driver_id_drivers_id_fk": {
+					"name": "laps_driver_id_drivers_id_fk",
+					"tableFrom": "laps",
+					"columnsFrom": ["driver_id"],
+					"tableTo": "drivers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"session_entry_reference": {
+					"name": "session_entry_reference",
+					"tableFrom": "laps",
+					"columnsFrom": ["session_id", "driver_id"],
+					"tableTo": "session_entries",
+					"columnsTo": ["session_id", "driver_id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				}
+			},
+			"compositePrimaryKeys": {
+				"laps_session_id_driver_id_lap_number_pk": {
+					"columns": ["driver_id", "lap_number", "session_id"],
+					"name": "laps_session_id_driver_id_lap_number_pk"
+				}
+			},
+			"uniqueConstraints": {}
+		},
+		"league_entries": {
+			"name": "league_entries",
+			"columns": {
+				"league_id": {
+					"name": "league_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"driver_id": {
+					"name": "driver_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"team_id": {
+					"name": "team_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"league_entries_league_id_leagues_id_fk": {
+					"name": "league_entries_league_id_leagues_id_fk",
+					"tableFrom": "league_entries",
+					"columnsFrom": ["league_id"],
+					"tableTo": "leagues",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				},
+				"league_entries_driver_id_drivers_id_fk": {
+					"name": "league_entries_driver_id_drivers_id_fk",
+					"tableFrom": "league_entries",
+					"columnsFrom": ["driver_id"],
+					"tableTo": "drivers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"league_entries_team_id_teams_id_fk": {
+					"name": "league_entries_team_id_teams_id_fk",
+					"tableFrom": "league_entries",
+					"columnsFrom": ["team_id"],
+					"tableTo": "teams",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"league_entries_league_id_driver_id_pk": {
+					"columns": ["driver_id", "league_id"],
+					"name": "league_entries_league_id_driver_id_pk"
+				}
+			},
+			"uniqueConstraints": {}
+		},
+		"leagues": {
+			"name": "leagues",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"status": {
+					"name": "status",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"game_id": {
+					"name": "game_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"leagues_game_id_games_id_fk": {
+					"name": "leagues_game_id_games_id_fk",
+					"tableFrom": "leagues",
+					"columnsFrom": ["game_id"],
+					"tableTo": "games",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"new_users": {
+			"name": "new_users",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"provider_id": {
+					"name": "provider_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"provider_user_id": {
+					"name": "provider_user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"expiration_time": {
+					"name": "expiration_time",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"oauth_accounts": {
+			"name": "oauth_accounts",
+			"columns": {
+				"provider_id": {
+					"name": "provider_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"provider_user_id": {
+					"name": "provider_user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"oauth_accounts_user_id_users_id_fk": {
+					"name": "oauth_accounts_user_id_users_id_fk",
+					"tableFrom": "oauth_accounts",
+					"columnsFrom": ["user_id"],
+					"tableTo": "users",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"oauth_accounts_provider_id_provider_user_id_pk": {
+					"columns": ["provider_id", "provider_user_id"],
+					"name": "oauth_accounts_provider_id_provider_user_id_pk"
+				}
+			},
+			"uniqueConstraints": {}
+		},
+		"overtakes": {
+			"name": "overtakes",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"overtaking_driver_id": {
+					"name": "overtaking_driver_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"overtaken_driver_id": {
+					"name": "overtaken_driver_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"lap_number": {
+					"name": "lap_number",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"overtakes_session_id_sessions_id_fk": {
+					"name": "overtakes_session_id_sessions_id_fk",
+					"tableFrom": "overtakes",
+					"columnsFrom": ["session_id"],
+					"tableTo": "sessions",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				},
+				"overtakes_overtaking_driver_id_drivers_id_fk": {
+					"name": "overtakes_overtaking_driver_id_drivers_id_fk",
+					"tableFrom": "overtakes",
+					"columnsFrom": ["overtaking_driver_id"],
+					"tableTo": "drivers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"overtakes_overtaken_driver_id_drivers_id_fk": {
+					"name": "overtakes_overtaken_driver_id_drivers_id_fk",
+					"tableFrom": "overtakes",
+					"columnsFrom": ["overtaken_driver_id"],
+					"tableTo": "drivers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"overtaking_session_entry_reference": {
+					"name": "overtaking_session_entry_reference",
+					"tableFrom": "overtakes",
+					"columnsFrom": ["session_id", "overtaking_driver_id"],
+					"tableTo": "session_entries",
+					"columnsTo": ["session_id", "driver_id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"overtaken_session_entry_reference": {
+					"name": "overtaken_session_entry_reference",
+					"tableFrom": "overtakes",
+					"columnsFrom": ["session_id", "overtaken_driver_id"],
+					"tableTo": "session_entries",
+					"columnsTo": ["session_id", "driver_id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"session_entries": {
+			"name": "session_entries",
+			"columns": {
+				"session_id": {
+					"name": "session_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"driver_id": {
+					"name": "driver_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"team_id": {
+					"name": "team_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"finish_status": {
+					"name": "finish_status",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"grid_position": {
+					"name": "grid_position",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"finish_position": {
+					"name": "finish_position",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"total_time_without_penalties_in_ms": {
+					"name": "total_time_without_penalties_in_ms",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"penalty_time_in_s": {
+					"name": "penalty_time_in_s",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"session_entries_session_id_sessions_id_fk": {
+					"name": "session_entries_session_id_sessions_id_fk",
+					"tableFrom": "session_entries",
+					"columnsFrom": ["session_id"],
+					"tableTo": "sessions",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				},
+				"session_entries_driver_id_drivers_id_fk": {
+					"name": "session_entries_driver_id_drivers_id_fk",
+					"tableFrom": "session_entries",
+					"columnsFrom": ["driver_id"],
+					"tableTo": "drivers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"session_entries_team_id_teams_id_fk": {
+					"name": "session_entries_team_id_teams_id_fk",
+					"tableFrom": "session_entries",
+					"columnsFrom": ["team_id"],
+					"tableTo": "teams",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"session_entries_session_id_driver_id_pk": {
+					"columns": ["driver_id", "session_id"],
+					"name": "session_entries_session_id_driver_id_pk"
+				}
+			},
+			"uniqueConstraints": {}
+		},
+		"sessions": {
+			"name": "sessions",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"expires_at": {
+					"name": "expires_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"sessions_user_id_users_id_fk": {
+					"name": "sessions_user_id_users_id_fk",
+					"tableFrom": "sessions",
+					"columnsFrom": ["user_id"],
+					"tableTo": "users",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"teams": {
+			"name": "teams",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"country": {
+					"name": "country",
+					"type": "text(2)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"image_path": {
+					"name": "image_path",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"tracks": {
+			"name": "tracks",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"country": {
+					"name": "country",
+					"type": "text(2)",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"image_path": {
+					"name": "image_path",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"tyre_stints": {
+			"name": "tyre_stints",
+			"columns": {
+				"session_id": {
+					"name": "session_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"driver_id": {
+					"name": "driver_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"order": {
+					"name": "order",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"compound": {
+					"name": "compound",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"start_lap": {
+					"name": "start_lap",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"end_lap": {
+					"name": "end_lap",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"tyre_stints_session_id_sessions_id_fk": {
+					"name": "tyre_stints_session_id_sessions_id_fk",
+					"tableFrom": "tyre_stints",
+					"columnsFrom": ["session_id"],
+					"tableTo": "sessions",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"tyre_stints_driver_id_drivers_id_fk": {
+					"name": "tyre_stints_driver_id_drivers_id_fk",
+					"tableFrom": "tyre_stints",
+					"columnsFrom": ["driver_id"],
+					"tableTo": "drivers",
+					"columnsTo": ["id"],
+					"onUpdate": "no action",
+					"onDelete": "no action"
+				},
+				"session_entry_reference": {
+					"name": "session_entry_reference",
+					"tableFrom": "tyre_stints",
+					"columnsFrom": ["session_id", "driver_id"],
+					"tableTo": "session_entries",
+					"columnsTo": ["session_id", "driver_id"],
+					"onUpdate": "no action",
+					"onDelete": "cascade"
+				}
+			},
+			"compositePrimaryKeys": {
+				"tyre_stints_session_id_driver_id_order_pk": {
+					"columns": ["driver_id", "order", "session_id"],
+					"name": "tyre_stints_session_id_driver_id_order_pk"
+				}
+			},
+			"uniqueConstraints": {}
+		},
+		"users": {
+			"name": "users",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"username": {
+					"name": "username",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"admin": {
+					"name": "admin",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"staff": {
+					"name": "staff",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"users_username_unique": {
+					"name": "users_username_unique",
+					"columns": ["username"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		}
+	},
+	"enums": {},
+	"_meta": {
+		"tables": {},
+		"columns": {}
+	},
+	"id": "55ea483b-ce08-4130-84b0-3e0301753927",
+	"prevId": "1495eb8a-cb79-4cd8-b86c-56e1470386c9"
 }

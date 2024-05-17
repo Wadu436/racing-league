@@ -61,7 +61,7 @@
 		<Form.FieldErrors />
 	</Form.Field>
 	<Form.Button formaction="?/save">Save</Form.Button>
-    <Form.Button variant="destructive" formaction="?/delete">Delete</Form.Button>
+	<Form.Button variant="destructive" formaction="?/delete">Delete</Form.Button>
 </form>
 {#if $message}
 	<div>{$message}</div>

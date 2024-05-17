@@ -97,7 +97,7 @@
 			{/if}
 		</div>
 	</nav>
-	<div class="card min-w-96 h-fit flex-shrink-0 flex-grow p-4">
+	<div class="card h-fit min-w-96 flex-shrink-0 flex-grow p-4">
 		<slot name="form" />
 	</div>
 </div>

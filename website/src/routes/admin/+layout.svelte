@@ -7,7 +7,7 @@
 		{ name: 'Teams', path: '/admin/teams' },
 		{ name: 'Drivers', path: '/admin/drivers' },
 		{ name: 'Tracks', path: '/admin/tracks' },
-		{ name: 'Leagues', path: '/admin/leagues' },
+		{ name: 'Leagues', path: '/admin/leagues' }
 	];
 </script>
 
@@ -17,7 +17,7 @@
 			{#each pages as page}
 				<li>
 					<a
-						class="selectable block py-2 px-4"
+						class="selectable block px-4 py-2"
 						data-selected={$pageStore.url.pathname.startsWith(page.path)}
 						href={page.path}>{page.name}</a
 					>

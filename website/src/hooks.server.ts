@@ -38,6 +38,6 @@ const protectedHook: Handle = async ({ event, resolve }) => {
 		}
 	}
 	return resolve(event);
-}
+};
 
 export const handle: Handle = sequence(authHook, protectedHook);

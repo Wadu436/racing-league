@@ -94,7 +94,7 @@
 		<div class="text-bold text-lg">Sessions</div>
 		{#each data.event.sessions as session}
 			<div>
-				<a href={`/admin/sessions/${session.id}`}>{session.session_type}</a>
+				<a href={`/admin/sessions/${session.id}`}>{session.sessionType}</a>
 			</div>
 		{/each}
 	</div>

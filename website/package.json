@@ -60,9 +60,7 @@
 		"zod": "^3.23.8"
 	},
 	"type": "module",
-	"dependencies": {
-		
-	},
+	"dependencies": {},
 	"engines": {
 		"node": ">=20.0.0 <21.0.0"
 	}
