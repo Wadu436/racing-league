@@ -1,1 +1,0 @@
-ALTER TABLE event_sessions ADD `event_order` integer NOT NULL DEFAULT 0;

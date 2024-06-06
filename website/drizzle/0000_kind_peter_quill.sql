@@ -7,8 +7,8 @@ CREATE TABLE `drivers` (
 --> statement-breakpoint
 CREATE TABLE `event_sessions` (
 	`id` text PRIMARY KEY NOT NULL,
-	`event_id` text NOT NULL,
 	`session_type` text NOT NULL,
+	`event_id` text NOT NULL,
 	`fastest_lap` integer,
 	FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`fastest_lap`) REFERENCES `drivers`(`id`) ON UPDATE no action ON DELETE no action
@@ -18,11 +18,17 @@ CREATE TABLE `events` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`league_order` integer NOT NULL,
-	`date` integer NOT NULL,
+	`date` integer,
 	`league_id` text NOT NULL,
 	`track_id` text NOT NULL,
 	FOREIGN KEY (`league_id`) REFERENCES `leagues`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`track_id`) REFERENCES `tracks`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `games` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`image_path` text
 );
 --> statement-breakpoint
 CREATE TABLE `laps` (
@@ -57,7 +63,9 @@ CREATE TABLE `league_entries` (
 CREATE TABLE `leagues` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
-	`status` text NOT NULL
+	`status` text NOT NULL,
+	`game_id` text,
+	FOREIGN KEY (`game_id`) REFERENCES `games`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `new_users` (
@@ -95,9 +103,10 @@ CREATE TABLE `session_entries` (
 	`finish_status` text NOT NULL,
 	`grid_position` integer NOT NULL,
 	`finish_position` integer NOT NULL,
+	`grid_penalty` integer DEFAULT 0 NOT NULL,
+	`fastest_lap` integer NOT NULL,
 	`total_time_without_penalties_in_ms` integer NOT NULL,
 	`penalty_time_in_s` integer NOT NULL,
-	PRIMARY KEY(`driver_id`, `session_id`),
 	FOREIGN KEY (`session_id`) REFERENCES `sessions`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`driver_id`) REFERENCES `drivers`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE no action
@@ -114,14 +123,14 @@ CREATE TABLE `teams` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`country` text(2) NOT NULL,
-	`image_path` text NOT NULL
+	`image_path` text
 );
 --> statement-breakpoint
 CREATE TABLE `tracks` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`country` text(2) NOT NULL,
-	`image_path` text NOT NULL
+	`image_path` text
 );
 --> statement-breakpoint
 CREATE TABLE `tyre_stints` (

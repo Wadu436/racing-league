@@ -1,47 +1,12 @@
 {
-  "version": "5",
+  "version": "6",
   "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1706481299727,
-      "tag": "0000_safe_phantom_reporter",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1706888884308,
-      "tag": "0001_square_vance_astro",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1712102335992,
-      "tag": "0002_serious_luckman",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1712112107252,
-      "tag": "0003_jazzy_excalibur",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1712165072682,
-      "tag": "0004_pink_kree",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
       "version": "6",
-      "when": 1715988083071,
-      "tag": "0005_left_micromax",
+      "when": 1717713080471,
+      "tag": "0000_kind_peter_quill",
       "breakpoints": true
     }
   ]
